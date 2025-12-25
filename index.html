@@ -7,32 +7,45 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .cat-btn { transition: 0.3s; border-bottom: 4px solid #2563eb; cursor: pointer; }
-        .option-btn { width: 100%; text-align: left; padding: 14px; margin: 6px 0; border: 1px solid #e2e8f0; border-radius: 12px; background: white; font-weight: 500; }
+        .option-btn { width: 100%; text-align: left; padding: 14px; margin: 6px 0; border: 1px solid #e2e8f0; border-radius: 12px; background: white; font-weight: 500; transition: 0.2s; }
         .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
         .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
         .explanation-box { margin-top: 15px; padding: 15px; border-left: 4px solid #f59e0b; background: #fffbeb; border-radius: 8px; }
+        .review-card { border-bottom: 1px solid #eee; padding: 15px 0; }
     </style>
 </head>
 <body class="bg-gray-50">
 
-    <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-lg sticky top-0">
+    <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-50">
         <span class="font-bold">🏆 SSC GS MASTER</span>
         <button onclick="toggleLang()" id="langBtn" class="bg-blue-500 px-4 py-1 rounded-full text-xs font-bold uppercase border border-white/30">HINDI</button>
     </nav>
 
     <div id="home-view" class="p-4 grid grid-cols-2 gap-4">
-        <div class="col-span-2 text-center p-10 text-gray-400" id="loader">Sheet se data load ho raha hai...</div>
+        <div class="col-span-2 text-center p-10 text-gray-400" id="loader">Data loading...</div>
     </div>
 
     <div id="quiz-view" class="hidden p-4 max-w-2xl mx-auto">
         <div id="quiz-box" class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100"></div>
     </div>
 
+    <div id="result-view" class="hidden p-4 max-w-2xl mx-auto">
+        <div class="bg-white p-6 rounded-3xl shadow-xl text-center mb-6">
+            <h2 class="text-2xl font-black text-blue-700">Quiz Summary</h2>
+            <div class="my-4 text-4xl font-bold" id="score-text">0/0</div>
+            <button onclick="location.reload()" class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold shadow-md mr-2">Home</button>
+            <button onclick="showReview()" class="bg-gray-800 text-white px-6 py-2 rounded-xl font-bold shadow-md">Review</button>
+        </div>
+        <div id="review-list" class="hidden bg-white p-6 rounded-3xl shadow-xl">
+            <h3 class="font-bold text-lg border-b pb-2 mb-4">Detailed Analysis</h3>
+            <div id="review-content"></div>
+        </div>
+    </div>
+
     <script>
         const sheetId = '1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs';
         const base = `https://opensheet.elk.sh/${sheetId}/Sheet1`;
-        let masterData = {};
-        let curCat = '', curIdx = 0, curLang = 'HI';
+        let masterData = {}, curCat = '', curIdx = 0, curLang = 'HI', correctCount = 0, userAnswers = [];
 
         fetch(base).then(res => res.json()).then(data => {
             document.getElementById('loader').classList.add('hidden');
@@ -43,8 +56,7 @@
             renderMenu();
         });
 
-        // Mobile Back Navigation
-        window.onpopstate = () => { if (!document.getElementById('quiz-view').classList.contains('hidden')) showHome(); };
+        window.onpopstate = () => location.reload();
 
         function renderMenu() {
             const menu = document.getElementById('home-view'); menu.innerHTML = '';
@@ -58,15 +70,10 @@
         }
 
         function startQuiz(cat) {
-            curCat = cat; curIdx = 0;
+            curCat = cat; curIdx = 0; correctCount = 0; userAnswers = [];
             document.getElementById('home-view').classList.add('hidden');
             document.getElementById('quiz-view').classList.remove('hidden');
             renderQuestion();
-        }
-
-        function showHome() {
-            document.getElementById('home-view').classList.remove('hidden');
-            document.getElementById('quiz-view').classList.add('hidden');
         }
 
         function renderQuestion() {
@@ -77,18 +84,15 @@
             const question = isHI ? q.Question_HI : (q.Question_EN || q.Question_HI);
             const explanation = isHI ? q.Explanation_HI : (q.Explanation_EN || q.Explanation_HI);
             const correct = isHI ? q.Correct_HI : (q.Correct_EN || q.Correct_HI);
-            
-            const options = isHI ? 
-                [q.Opt1_HI, q.Opt2_HI, q.Opt3_HI, q.Opt4_HI] : 
-                [(q.Opt1_EN || q.Opt1_HI), (q.Opt2_EN || q.Opt2_HI), (q.Opt3_EN || q.Opt3_HI), (q.Opt4_EN || q.Opt4_HI)];
+            const options = isHI ? [q.Opt1_HI, q.Opt2_HI, q.Opt3_HI, q.Opt4_HI] : [(q.Opt1_EN || q.Opt1_HI), (q.Opt2_EN || q.Opt2_HI), (q.Opt3_EN || q.Opt3_HI), (q.Opt4_EN || q.Opt4_HI)];
 
             box.innerHTML = `
                 <div class="flex justify-between items-center mb-4 text-[10px]">
                     <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold uppercase">${q.Tag || 'GK'}</span>
                     <span class="text-gray-400 font-bold">${curIdx + 1}/${masterData[curCat].length}</span>
                 </div>
-                <p class="text-lg font-bold text-gray-800 leading-snug mb-6">${question}</p>
-                <div class="space-y-2">
+                <p class="text-lg font-bold text-gray-800 leading-tight mb-6">${question}</p>
+                <div class="space-y-1">
                     ${options.map(opt => `<button class="option-btn" onclick="checkAns(this, '${opt}', '${correct}', '${explanation}')">${opt}</button>`).join('')}
                 </div>
                 <div id="ex-box" class="hidden"></div>
@@ -98,23 +102,46 @@
         function checkAns(btn, sel, cor, ex) {
             const btns = document.querySelectorAll('.option-btn');
             btns.forEach(b => b.disabled = true);
-            if (sel === cor) btn.classList.add('correct');
-            else { btn.classList.add('wrong'); btns.forEach(b => { if(b.innerText === cor) b.classList.add('correct'); }); }
+            
+            userAnswers.push({ q: masterData[curCat][curIdx], selected: sel, correct: cor, isRight: (sel === cor) });
+
+            if (sel === cor) {
+                btn.classList.add('correct');
+                correctCount++;
+            } else { 
+                btn.classList.add('wrong'); 
+                btns.forEach(b => { if(b.innerText === cor) b.classList.add('correct'); }); 
+            }
 
             const exBox = document.getElementById('ex-box');
-            exBox.innerHTML = `
-                <div class="explanation-box animate-pulse">
-                    <b class="text-amber-700">💡 Solution:</b><p class="text-gray-700 mt-1">${ex || '...'}</p>
-                </div>
-                <button onclick="nextQ()" class="w-full bg-blue-600 text-white p-4 rounded-xl font-bold mt-4 shadow-lg active:scale-95 transition-transform">Next ➔</button>
-            `;
+            exBox.innerHTML = `<div class="explanation-box animate-pulse"><b class="text-amber-700">💡 Solution:</b><p class="text-gray-700 mt-1">${ex || '...'}</p></div>
+                <button onclick="nextQ()" class="w-full bg-blue-600 text-white p-4 rounded-xl font-bold mt-4 shadow-lg active:scale-95">Next Question ➔</button>`;
             exBox.classList.remove('hidden');
         }
 
         function nextQ() {
             curIdx++;
             if (curIdx < masterData[curCat].length) renderQuestion();
-            else { alert("Quiz Finished!"); showHome(); }
+            else showResult();
+        }
+
+        function showResult() {
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+            document.getElementById('score-text').innerText = `${correctCount}/${masterData[curCat].length}`;
+        }
+
+        function showReview() {
+            const list = document.getElementById('review-list');
+            const content = document.getElementById('review-content');
+            list.classList.toggle('hidden');
+            content.innerHTML = userAnswers.map((ans, i) => `
+                <div class="review-card">
+                    <p class="font-bold text-sm text-gray-800">Q${i+1}. ${curLang === 'HI' ? ans.q.Question_HI : ans.q.Question_EN}</p>
+                    <p class="text-xs mt-1 ${ans.isRight ? 'text-green-600' : 'text-red-600'}"><b>Your Ans:</b> ${ans.selected}</p>
+                    ${!ans.isRight ? `<p class="text-xs text-green-600 font-bold"><b>Correct:</b> ${ans.correct}</p>` : ''}
+                </div>
+            `).join('');
         }
 
         function toggleLang() {
@@ -125,3 +152,4 @@
     </script>
 </body>
 </html>
+
