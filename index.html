@@ -21,17 +21,17 @@
     </nav>
 
     <div id="home-view" class="p-4 grid grid-cols-2 gap-4">
-        <div class="col-span-2 text-center p-10 text-gray-400" id="loader">Data loading... Please wait.</div>
+        <div class="col-span-2 text-center p-10 text-gray-400" id="loader">डाटा लोड हो रहा है... कृपया रुकें।</div>
     </div>
 
     <div id="set-view" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[60]">
         <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl">
-            <h3 class="font-bold text-xl mb-4 text-gray-800">Select Limit</h3>
+            <h3 class="font-bold text-xl mb-4 text-gray-800">सवाल चुनें</h3>
             <div class="grid gap-3">
-                <button onclick="confirmStart(10)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">10 Questions</button>
-                <button onclick="confirmStart(20)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">20 Questions</button>
-                <button onclick="confirmStart(30)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">30 Questions</button>
-                <button onclick="closeSetView()" class="text-gray-400 font-bold mt-2">Cancel</button>
+                <button onclick="confirmStart(10)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">10 सवाल</button>
+                <button onclick="confirmStart(20)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">20 सवाल</button>
+                <button onclick="confirmStart(30)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">30 सवाल</button>
+                <button onclick="closeSetView()" class="text-gray-400 font-bold mt-2">रद्द करें</button>
             </div>
         </div>
     </div>
@@ -42,27 +42,27 @@
 
     <div id="result-view" class="hidden p-4 text-center">
         <div class="bg-white p-8 rounded-3xl shadow-xl">
-            <h2 class="text-2xl font-bold text-blue-700">Quiz Completed!</h2>
+            <h2 class="text-2xl font-bold text-blue-700">क्विज़ समाप्त!</h2>
             <div class="text-5xl font-black my-6" id="score-text">0/0</div>
-            <button onclick="location.reload()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold w-full">Back to Home</button>
+            <button onclick="location.reload()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold w-full">होम पर वापस जाएं</button>
         </div>
     </div>
 
     <script>
-        // APNI SHEET ID YAHA CHECK KAREIN
-        const sheetId = '1_9i_S0_Rj5K0X8Q-N4FqB_eUisT_P-B7oN2M_p0_FwY'; 
+        // आपकी नई ID यहाँ अपडेट कर दी गई है
+        const sheetId = '1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs'; 
         const base = `https://opensheet.elk.sh/${sheetId}/Sheet1`;
         
         let masterData = {}, curCat = '', curIdx = 0, curLang = 'HI', correctCount = 0, quizLimit = 0, activeData = [];
 
-        // Back navigation fix
+        // Back button fix
         window.onpopstate = function() { location.reload(); };
 
         fetch(base)
             .then(res => res.json())
             .then(data => {
                 if(!data || data.length === 0) {
-                    document.getElementById('loader').innerText = "No data found. Check Sheet.";
+                    document.getElementById('loader').innerText = "डाटा नहीं मिला। कृपया शीट चेक करें।";
                     return;
                 }
                 document.getElementById('loader').classList.add('hidden');
@@ -75,7 +75,7 @@
                 renderMenu();
             })
             .catch(err => {
-                document.getElementById('loader').innerText = "Error loading data.";
+                document.getElementById('loader').innerText = "एरर: डाटा लोड नहीं हुआ।";
                 console.error(err);
             });
 
@@ -151,10 +151,10 @@
             const exBox = document.getElementById('ex-box');
             exBox.innerHTML = `
                 <div class="explanation-box">
-                    <p class="text-xs font-bold text-amber-600 mb-1">EXPLANATION:</p>
-                    <p class="text-gray-700 text-sm">${ex || 'No explanation available.'}</p>
+                    <p class="text-xs font-bold text-amber-600 mb-1">विस्तार:</p>
+                    <p class="text-gray-700 text-sm">${ex || 'व्याख्या उपलब्ध नहीं है।'}</p>
                 </div>
-                <button onclick="nextQ()" class="w-full bg-blue-700 text-white p-4 rounded-xl font-bold mt-4 shadow-lg">Next ➔</button>
+                <button onclick="nextQ()" class="w-full bg-blue-700 text-white p-4 rounded-xl font-bold mt-4 shadow-lg">अगला सवाल ➔</button>
             `;
             exBox.classList.remove('hidden');
         }
