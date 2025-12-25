@@ -25,6 +25,18 @@
         <div class="col-span-2 text-center p-10 text-gray-400" id="loader">Data loading...</div>
     </div>
 
+    <div id="set-view" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-[60]">
+        <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl">
+            <h3 class="font-bold text-xl mb-4 text-gray-800">Select Question Limit</h3>
+            <div class="grid gap-3">
+                <button onclick="confirmStart(10)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">10 Questions</button>
+                <button onclick="confirmStart(20)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">20 Questions</button>
+                <button onclick="confirmStart(30)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">30 Questions</button>
+                <button onclick="closeSetView()" class="text-gray-500 font-bold mt-2">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div id="quiz-view" class="hidden p-4 max-w-2xl mx-auto">
         <div id="quiz-box" class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100"></div>
     </div>
@@ -33,7 +45,7 @@
         <div class="bg-white p-6 rounded-3xl shadow-xl text-center mb-6">
             <h2 class="text-2xl font-black text-blue-700">Quiz Summary</h2>
             <div class="my-4 text-4xl font-bold" id="score-text">0/0</div>
-            <button onclick="location.reload()" class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold shadow-md mr-2">Home</button>
+            <button onclick="goHome()" class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold shadow-md mr-2">Home</button>
             <button onclick="showReview()" class="bg-gray-800 text-white px-6 py-2 rounded-xl font-bold shadow-md">Review</button>
         </div>
         <div id="review-list" class="hidden bg-white p-6 rounded-3xl shadow-xl">
@@ -43,9 +55,9 @@
     </div>
 
     <script>
-        const sheetId = '1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs';
+        const sheetId = '1_9i_S0_Rj5K0X8Q-N4FqB_eUisT_P-B7oN2M_p0_FwY'; // Apni Nayi Sheet ID yahan check karein
         const base = `https://opensheet.elk.sh/${sheetId}/Sheet1`;
-        let masterData = {}, curCat = '', curIdx = 0, curLang = 'HI', correctCount = 0, userAnswers = [];
+        let masterData = {}, curCat = '', curIdx = 0, curLang = 'HI', correctCount = 0, userAnswers = [], quizLimit = 0, activeData = [];
 
         fetch(base).then(res => res.json()).then(data => {
             document.getElementById('loader').classList.add('hidden');
@@ -56,7 +68,18 @@
             renderMenu();
         });
 
-        window.onpopstate = () => location.reload();
+        // Navigation Fix
+        window.onpopstate = function() {
+            goHome();
+        };
+
+        function goHome() {
+            document.getElementById('home-view').classList.remove('hidden');
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('set-view').classList.add('hidden');
+            renderMenu();
+        }
 
         function renderMenu() {
             const menu = document.getElementById('home-view'); menu.innerHTML = '';
@@ -64,20 +87,38 @@
                 const btn = document.createElement('div');
                 btn.className = "cat-btn bg-white p-6 rounded-xl shadow-sm text-center font-bold text-gray-700";
                 btn.innerHTML = `📂<br>${cat}`;
-                btn.onclick = () => { history.pushState({p:1}, ""); startQuiz(cat); };
+                btn.onclick = () => { selectSet(cat); };
                 menu.appendChild(btn);
             });
         }
 
-        function startQuiz(cat) {
-            curCat = cat; curIdx = 0; correctCount = 0; userAnswers = [];
+        function selectSet(cat) {
+            curCat = cat;
+            document.getElementById('set-view').classList.remove('hidden');
+        }
+
+        function closeSetView() {
+            document.getElementById('set-view').classList.add('hidden');
+        }
+
+        function confirmStart(limit) {
+            quizLimit = limit;
+            closeSetView();
+            history.pushState({view: 'quiz'}, "");
+            startQuiz();
+        }
+
+        function startQuiz() {
+            // Shuffle data and pick limited questions
+            activeData = [...masterData[curCat]].sort(() => 0.5 - Math.random()).slice(0, quizLimit);
+            curIdx = 0; correctCount = 0; userAnswers = [];
             document.getElementById('home-view').classList.add('hidden');
             document.getElementById('quiz-view').classList.remove('hidden');
             renderQuestion();
         }
 
         function renderQuestion() {
-            const q = masterData[curCat][curIdx];
+            const q = activeData[curIdx];
             const isHI = curLang === 'HI';
             const box = document.getElementById('quiz-box');
 
@@ -89,7 +130,7 @@
             box.innerHTML = `
                 <div class="flex justify-between items-center mb-4 text-[10px]">
                     <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold uppercase">${q.Tag || 'GK'}</span>
-                    <span class="text-gray-400 font-bold">${curIdx + 1}/${masterData[curCat].length}</span>
+                    <span class="text-gray-400 font-bold">${curIdx + 1}/${activeData.length}</span>
                 </div>
                 <p class="text-lg font-bold text-gray-800 leading-tight mb-6">${question}</p>
                 <div class="space-y-1">
@@ -102,33 +143,27 @@
         function checkAns(btn, sel, cor, ex) {
             const btns = document.querySelectorAll('.option-btn');
             btns.forEach(b => b.disabled = true);
-            
-            userAnswers.push({ q: masterData[curCat][curIdx], selected: sel, correct: cor, isRight: (sel === cor) });
+            userAnswers.push({ q: activeData[curIdx], selected: sel, correct: cor, isRight: (sel === cor) });
 
-            if (sel === cor) {
-                btn.classList.add('correct');
-                correctCount++;
-            } else { 
-                btn.classList.add('wrong'); 
-                btns.forEach(b => { if(b.innerText === cor) b.classList.add('correct'); }); 
-            }
+            if (sel === cor) { btn.classList.add('correct'); correctCount++; } 
+            else { btn.classList.add('wrong'); btns.forEach(b => { if(b.innerText === cor) b.classList.add('correct'); }); }
 
             const exBox = document.getElementById('ex-box');
-            exBox.innerHTML = `<div class="explanation-box animate-pulse"><b class="text-amber-700">💡 Solution:</b><p class="text-gray-700 mt-1">${ex || '...'}</p></div>
-                <button onclick="nextQ()" class="w-full bg-blue-600 text-white p-4 rounded-xl font-bold mt-4 shadow-lg active:scale-95">Next Question ➔</button>`;
+            exBox.innerHTML = `<div class="explanation-box"><b class="text-amber-700">💡 Solution:</b><p class="text-gray-700 mt-1">${ex || '...'}</p></div>
+                <button onclick="nextQ()" class="w-full bg-blue-600 text-white p-4 rounded-xl font-bold mt-4 shadow-lg">Next Question ➔</button>`;
             exBox.classList.remove('hidden');
         }
 
         function nextQ() {
             curIdx++;
-            if (curIdx < masterData[curCat].length) renderQuestion();
+            if (curIdx < activeData.length) renderQuestion();
             else showResult();
         }
 
         function showResult() {
             document.getElementById('quiz-view').classList.add('hidden');
             document.getElementById('result-view').classList.remove('hidden');
-            document.getElementById('score-text').innerText = `${correctCount}/${masterData[curCat].length}`;
+            document.getElementById('score-text').innerText = `${correctCount}/${activeData.length}`;
         }
 
         function showReview() {
@@ -136,7 +171,7 @@
             const content = document.getElementById('review-content');
             list.classList.toggle('hidden');
             content.innerHTML = userAnswers.map((ans, i) => `
-                <div class="review-card">
+                <div class="review-card text-left">
                     <p class="font-bold text-sm text-gray-800">Q${i+1}. ${curLang === 'HI' ? ans.q.Question_HI : ans.q.Question_EN}</p>
                     <p class="text-xs mt-1 ${ans.isRight ? 'text-green-600' : 'text-red-600'}"><b>Your Ans:</b> ${ans.selected}</p>
                     ${!ans.isRight ? `<p class="text-xs text-green-600 font-bold"><b>Correct:</b> ${ans.correct}</p>` : ''}
@@ -152,4 +187,3 @@
     </script>
 </body>
 </html>
-
