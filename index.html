@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .cat-btn { transition: 0.3s; border-bottom: 4px solid #2563eb; cursor: pointer; }
-        .option-btn { width: 100%; text-align: left; padding: 14px; margin: 6px 0; border: 1px solid #e2e8f0; border-radius: 12px; background: white; font-weight: 500; transition: 0.2s; }
+        .option-btn { width: 100%; text-align: left; padding: 14px; margin: 6px 0; border: 1px solid #e2e8f0; border-radius: 12px; background: white; font-weight: 500; transition: 0.2s; position: relative; z-index: 10; }
         .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
         .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
         .explanation-box { margin-top: 15px; padding: 15px; border-left: 4px solid #f59e0b; background: #fffbeb; border-radius: 8px; }
@@ -22,7 +22,7 @@
     </nav>
 
     <div id="home-view" class="p-4 grid grid-cols-2 gap-4">
-        <div class="col-span-2 text-center p-10 text-gray-400" id="loader">Loading Data...</div>
+        <div class="col-span-2 text-center p-10 text-gray-400" id="loader">Data load ho raha hai...</div>
     </div>
 
     <div id="set-view" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[60]">
@@ -39,6 +39,7 @@
 
     <div id="quiz-view" class="hidden p-4 max-w-2xl mx-auto">
         <div id="quiz-box" class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100"></div>
+        <div id="ex-box" class="hidden"></div>
     </div>
 
     <div id="result-view" class="hidden p-4 max-w-2xl mx-auto text-center">
@@ -61,23 +62,13 @@
         const base = `https://opensheet.elk.sh/${sheetId}/Sheet1`;
         let masterData = {}, curCat = '', curIdx = 0, curLang = 'HI', correctCount = 0, quizLimit = 0, activeData = [], userAnswers = [];
 
-        // --- NAVIGATION BACK FIX ---
-        function initNavigation() {
-            window.history.pushState({view: 'home'}, "");
-        }
-
+        function initNavigation() { window.history.pushState({view: 'home'}, ""); }
         window.onpopstate = function(event) {
-            if (document.getElementById('quiz-view').classList.contains('hidden') && 
-                document.getElementById('set-view').classList.contains('hidden') &&
-                document.getElementById('result-view').classList.contains('hidden')) {
-                // Agar home par hai toh exit hone do
-            } else {
-                // Agar quiz ya result mein hai toh home par lao, exit mat karo
+            if (document.getElementById('home-view').classList.contains('hidden')) {
                 initNavigation();
                 location.reload(); 
             }
         };
-        // ---------------------------
 
         fetch(base).then(res => res.json()).then(data => {
             document.getElementById('loader').classList.add('hidden');
@@ -88,7 +79,7 @@
                 }
             });
             renderMenu();
-            initNavigation(); // Start the back-button lock
+            initNavigation();
         });
 
         function renderMenu() {
@@ -108,7 +99,7 @@
         function confirmStart(limit) {
             quizLimit = limit;
             closeSetView();
-            window.history.pushState({view: 'quiz'}, ""); // Extra history layer
+            window.history.pushState({view: 'quiz'}, "");
             startQuiz();
         }
 
@@ -124,6 +115,11 @@
             const q = activeData[curIdx];
             const isHI = curLang === 'HI';
             const box = document.getElementById('quiz-box');
+            const exBox = document.getElementById('ex-box');
+            
+            exBox.innerHTML = ''; 
+            exBox.classList.add('hidden');
+
             const question = isHI ? q.Question_HI : (q.Question_EN || q.Question_HI);
             const correct = isHI ? q.Correct_HI : (q.Correct_EN || q.Correct_HI);
             const options = isHI ? [q.Opt1_HI, q.Opt2_HI, q.Opt3_HI, q.Opt4_HI] : [q.Opt1_EN, q.Opt2_EN, q.Opt3_EN, q.Opt4_EN];
@@ -135,25 +131,28 @@
                     <span>${curIdx + 1}/${activeData.length}</span>
                 </div>
                 <h2 class="text-lg font-bold text-gray-800 mb-6 leading-tight">${question}</h2>
-                <div class="grid gap-2">
+                <div class="grid gap-2 relative z-10">
                     ${options.map(opt => `<button class="option-btn" onclick="checkAns(this, '${opt}', '${correct}', '${explanation}')">${opt || '...'}</button>`).join('')}
                 </div>
-                <div id="ex-box" class="hidden mt-4"></div>
             `;
         }
 
         function checkAns(btn, sel, cor, ex) {
             const btns = document.querySelectorAll('.option-btn');
-            btns.forEach(b => b.disabled = true);
+            btns.forEach(b => b.style.pointerEvents = 'none');
+            
             let isRight = (sel === cor);
             userAnswers.push({ q: activeData[curIdx], selected: sel, correct: cor, isRight: isRight });
+
             if (isRight) { btn.classList.add('correct'); correctCount++; } 
             else { btn.classList.add('wrong'); btns.forEach(b => { if(b.innerText === cor) b.classList.add('correct'); }); }
-            document.getElementById('ex-box').innerHTML = `
+
+            const exBox = document.getElementById('ex-box');
+            exBox.innerHTML = `
                 <div class="explanation-box"><p class="text-xs font-bold text-amber-600 mb-1">विस्तार:</p><p class="text-gray-700 text-sm">${ex || '...'}</p></div>
-                <button onclick="nextQ()" class="w-full bg-blue-700 text-white p-4 rounded-xl font-bold mt-4 shadow-lg">Next ➔</button>
+                <button onclick="nextQ()" class="w-full bg-blue-700 text-white p-4 rounded-xl font-bold mt-4 shadow-lg relative z-20">Next Question ➔</button>
             `;
-            document.getElementById('ex-box').classList.remove('hidden');
+            exBox.classList.remove('hidden');
         }
 
         function nextQ() {
