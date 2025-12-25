@@ -22,7 +22,7 @@
     </nav>
 
     <div id="home-view" class="p-4 grid grid-cols-2 gap-4">
-        <div class="col-span-2 text-center p-10 text-gray-400" id="loader">Data load ho raha hai...</div>
+        <div class="col-span-2 text-center p-10 text-gray-400" id="loader">Loading Data...</div>
     </div>
 
     <div id="set-view" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[60]">
@@ -59,18 +59,25 @@
     <script>
         const sheetId = '1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs'; 
         const base = `https://opensheet.elk.sh/${sheetId}/Sheet1`;
-        
         let masterData = {}, curCat = '', curIdx = 0, curLang = 'HI', correctCount = 0, quizLimit = 0, activeData = [], userAnswers = [];
 
-        // NAVIGATION FIX (Back Button Logic)
-        history.pushState({page: 'home'}, "");
+        // --- NAVIGATION BACK FIX ---
+        function initNavigation() {
+            window.history.pushState({view: 'home'}, "");
+        }
+
         window.onpopstate = function(event) {
-            if (document.getElementById('home-view').classList.contains('hidden')) {
-                location.reload(); // Quiz se home par le aayega
+            if (document.getElementById('quiz-view').classList.contains('hidden') && 
+                document.getElementById('set-view').classList.contains('hidden') &&
+                document.getElementById('result-view').classList.contains('hidden')) {
+                // Agar home par hai toh exit hone do
             } else {
-                history.back(); // App exit karega agar home par ho
+                // Agar quiz ya result mein hai toh home par lao, exit mat karo
+                initNavigation();
+                location.reload(); 
             }
         };
+        // ---------------------------
 
         fetch(base).then(res => res.json()).then(data => {
             document.getElementById('loader').classList.add('hidden');
@@ -81,11 +88,11 @@
                 }
             });
             renderMenu();
+            initNavigation(); // Start the back-button lock
         });
 
         function renderMenu() {
-            const menu = document.getElementById('home-view');
-            menu.innerHTML = '';
+            const menu = document.getElementById('home-view'); menu.innerHTML = '';
             Object.keys(masterData).forEach(cat => {
                 const btn = document.createElement('div');
                 btn.className = "cat-btn bg-white p-6 rounded-xl shadow-md text-center font-bold text-blue-700 flex flex-col items-center justify-center";
@@ -95,17 +102,13 @@
             });
         }
 
-        function selectSet(cat) {
-            curCat = cat;
-            document.getElementById('set-view').classList.remove('hidden');
-        }
-
+        function selectSet(cat) { curCat = cat; document.getElementById('set-view').classList.remove('hidden'); }
         function closeSetView() { document.getElementById('set-view').classList.add('hidden'); }
 
         function confirmStart(limit) {
             quizLimit = limit;
             closeSetView();
-            history.pushState({page: 'quiz'}, ""); // Quiz state push
+            window.history.pushState({view: 'quiz'}, ""); // Extra history layer
             startQuiz();
         }
 
@@ -142,16 +145,13 @@
         function checkAns(btn, sel, cor, ex) {
             const btns = document.querySelectorAll('.option-btn');
             btns.forEach(b => b.disabled = true);
-            
             let isRight = (sel === cor);
             userAnswers.push({ q: activeData[curIdx], selected: sel, correct: cor, isRight: isRight });
-
             if (isRight) { btn.classList.add('correct'); correctCount++; } 
             else { btn.classList.add('wrong'); btns.forEach(b => { if(b.innerText === cor) b.classList.add('correct'); }); }
-
             document.getElementById('ex-box').innerHTML = `
                 <div class="explanation-box"><p class="text-xs font-bold text-amber-600 mb-1">विस्तार:</p><p class="text-gray-700 text-sm">${ex || '...'}</p></div>
-                <button onclick="nextQ()" class="w-full bg-blue-700 text-white p-4 rounded-xl font-bold mt-4 shadow-lg">Next Question ➔</button>
+                <button onclick="nextQ()" class="w-full bg-blue-700 text-white p-4 rounded-xl font-bold mt-4 shadow-lg">Next ➔</button>
             `;
             document.getElementById('ex-box').classList.remove('hidden');
         }
