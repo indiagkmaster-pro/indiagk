@@ -11,6 +11,7 @@
         .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
         .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
         .explanation-box { margin-top: 15px; padding: 15px; border-left: 4px solid #f59e0b; background: #fffbeb; border-radius: 8px; }
+        .review-card { border-bottom: 1px solid #eee; padding: 15px 0; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -21,17 +22,17 @@
     </nav>
 
     <div id="home-view" class="p-4 grid grid-cols-2 gap-4">
-        <div class="col-span-2 text-center p-10 text-gray-400" id="loader">डाटा लोड हो रहा है... कृपया रुकें।</div>
+        <div class="col-span-2 text-center p-10 text-gray-400" id="loader">Data load ho raha hai...</div>
     </div>
 
     <div id="set-view" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[60]">
         <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl">
-            <h3 class="font-bold text-xl mb-4 text-gray-800">सवाल चुनें</h3>
+            <h3 class="font-bold text-xl mb-4 text-gray-800">Select Limit</h3>
             <div class="grid gap-3">
-                <button onclick="confirmStart(10)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">10 सवाल</button>
-                <button onclick="confirmStart(20)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">20 सवाल</button>
-                <button onclick="confirmStart(30)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">30 सवाल</button>
-                <button onclick="closeSetView()" class="text-gray-400 font-bold mt-2">रद्द करें</button>
+                <button onclick="confirmStart(10)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">10 Questions</button>
+                <button onclick="confirmStart(20)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">20 Questions</button>
+                <button onclick="confirmStart(30)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">30 Questions</button>
+                <button onclick="closeSetView()" class="text-gray-400 font-bold mt-2">Cancel</button>
             </div>
         </div>
     </div>
@@ -40,44 +41,47 @@
         <div id="quiz-box" class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100"></div>
     </div>
 
-    <div id="result-view" class="hidden p-4 text-center">
-        <div class="bg-white p-8 rounded-3xl shadow-xl">
-            <h2 class="text-2xl font-bold text-blue-700">क्विज़ समाप्त!</h2>
+    <div id="result-view" class="hidden p-4 max-w-2xl mx-auto text-center">
+        <div class="bg-white p-8 rounded-3xl shadow-xl mb-6">
+            <h2 class="text-2xl font-bold text-blue-700">Quiz Completed!</h2>
             <div class="text-5xl font-black my-6" id="score-text">0/0</div>
-            <button onclick="location.reload()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold w-full">होम पर वापस जाएं</button>
+            <div class="flex gap-2">
+                <button onclick="location.reload()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold">Home</button>
+                <button onclick="showReview()" class="flex-1 bg-gray-800 text-white py-3 rounded-xl font-bold">Review</button>
+            </div>
+        </div>
+        <div id="review-list" class="hidden bg-white p-6 rounded-3xl shadow-xl text-left">
+            <h3 class="font-bold text-lg border-b pb-2 mb-4">Detailed Analysis</h3>
+            <div id="review-content"></div>
         </div>
     </div>
 
     <script>
-        // आपकी नई ID यहाँ अपडेट कर दी गई है
         const sheetId = '1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs'; 
         const base = `https://opensheet.elk.sh/${sheetId}/Sheet1`;
         
-        let masterData = {}, curCat = '', curIdx = 0, curLang = 'HI', correctCount = 0, quizLimit = 0, activeData = [];
+        let masterData = {}, curCat = '', curIdx = 0, curLang = 'HI', correctCount = 0, quizLimit = 0, activeData = [], userAnswers = [];
 
-        // Back button fix
-        window.onpopstate = function() { location.reload(); };
+        // NAVIGATION FIX (Back Button Logic)
+        history.pushState({page: 'home'}, "");
+        window.onpopstate = function(event) {
+            if (document.getElementById('home-view').classList.contains('hidden')) {
+                location.reload(); // Quiz se home par le aayega
+            } else {
+                history.back(); // App exit karega agar home par ho
+            }
+        };
 
-        fetch(base)
-            .then(res => res.json())
-            .then(data => {
-                if(!data || data.length === 0) {
-                    document.getElementById('loader').innerText = "डाटा नहीं मिला। कृपया शीट चेक करें।";
-                    return;
+        fetch(base).then(res => res.json()).then(data => {
+            document.getElementById('loader').classList.add('hidden');
+            data.forEach(item => {
+                if(item.Category) {
+                    if (!masterData[item.Category]) masterData[item.Category] = [];
+                    masterData[item.Category].push(item);
                 }
-                document.getElementById('loader').classList.add('hidden');
-                data.forEach(item => {
-                    if(item.Category) {
-                        if (!masterData[item.Category]) masterData[item.Category] = [];
-                        masterData[item.Category].push(item);
-                    }
-                });
-                renderMenu();
-            })
-            .catch(err => {
-                document.getElementById('loader').innerText = "एरर: डाटा लोड नहीं हुआ।";
-                console.error(err);
             });
+            renderMenu();
+        });
 
         function renderMenu() {
             const menu = document.getElementById('home-view');
@@ -96,20 +100,18 @@
             document.getElementById('set-view').classList.remove('hidden');
         }
 
-        function closeSetView() {
-            document.getElementById('set-view').classList.add('hidden');
-        }
+        function closeSetView() { document.getElementById('set-view').classList.add('hidden'); }
 
         function confirmStart(limit) {
             quizLimit = limit;
             closeSetView();
-            history.pushState({view: 'quiz'}, "");
+            history.pushState({page: 'quiz'}, ""); // Quiz state push
             startQuiz();
         }
 
         function startQuiz() {
             activeData = [...masterData[curCat]].sort(() => 0.5 - Math.random()).slice(0, quizLimit);
-            curIdx = 0; correctCount = 0;
+            curIdx = 0; correctCount = 0; userAnswers = [];
             document.getElementById('home-view').classList.add('hidden');
             document.getElementById('quiz-view').classList.remove('hidden');
             renderQuestion();
@@ -119,7 +121,6 @@
             const q = activeData[curIdx];
             const isHI = curLang === 'HI';
             const box = document.getElementById('quiz-box');
-
             const question = isHI ? q.Question_HI : (q.Question_EN || q.Question_HI);
             const correct = isHI ? q.Correct_HI : (q.Correct_EN || q.Correct_HI);
             const options = isHI ? [q.Opt1_HI, q.Opt2_HI, q.Opt3_HI, q.Opt4_HI] : [q.Opt1_EN, q.Opt2_EN, q.Opt3_EN, q.Opt4_EN];
@@ -141,22 +142,18 @@
         function checkAns(btn, sel, cor, ex) {
             const btns = document.querySelectorAll('.option-btn');
             btns.forEach(b => b.disabled = true);
-            if (sel === cor) {
-                btn.classList.add('correct');
-                correctCount++;
-            } else {
-                btn.classList.add('wrong');
-                btns.forEach(b => { if(b.innerText === cor) b.classList.add('correct'); });
-            }
-            const exBox = document.getElementById('ex-box');
-            exBox.innerHTML = `
-                <div class="explanation-box">
-                    <p class="text-xs font-bold text-amber-600 mb-1">विस्तार:</p>
-                    <p class="text-gray-700 text-sm">${ex || 'व्याख्या उपलब्ध नहीं है।'}</p>
-                </div>
-                <button onclick="nextQ()" class="w-full bg-blue-700 text-white p-4 rounded-xl font-bold mt-4 shadow-lg">अगला सवाल ➔</button>
+            
+            let isRight = (sel === cor);
+            userAnswers.push({ q: activeData[curIdx], selected: sel, correct: cor, isRight: isRight });
+
+            if (isRight) { btn.classList.add('correct'); correctCount++; } 
+            else { btn.classList.add('wrong'); btns.forEach(b => { if(b.innerText === cor) b.classList.add('correct'); }); }
+
+            document.getElementById('ex-box').innerHTML = `
+                <div class="explanation-box"><p class="text-xs font-bold text-amber-600 mb-1">विस्तार:</p><p class="text-gray-700 text-sm">${ex || '...'}</p></div>
+                <button onclick="nextQ()" class="w-full bg-blue-700 text-white p-4 rounded-xl font-bold mt-4 shadow-lg">Next Question ➔</button>
             `;
-            exBox.classList.remove('hidden');
+            document.getElementById('ex-box').classList.remove('hidden');
         }
 
         function nextQ() {
@@ -171,6 +168,20 @@
             document.getElementById('score-text').innerText = `${correctCount}/${activeData.length}`;
         }
 
+        function showReview() {
+            const list = document.getElementById('review-list');
+            const content = document.getElementById('review-content');
+            list.classList.remove('hidden');
+            content.innerHTML = userAnswers.map((ans, i) => `
+                <div class="review-card">
+                    <p class="font-bold text-sm text-gray-800">Q${i+1}. ${curLang === 'HI' ? ans.q.Question_HI : ans.q.Question_EN}</p>
+                    <p class="text-xs mt-1 ${ans.isRight ? 'text-green-600' : 'text-red-600'}"><b>Your Ans:</b> ${ans.selected}</p>
+                    ${!ans.isRight ? `<p class="text-xs text-green-600 font-bold"><b>Correct:</b> ${ans.correct}</p>` : ''}
+                </div>
+            `).join('');
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
         function toggleLang() {
             curLang = curLang === 'HI' ? 'EN' : 'HI';
             document.getElementById('langBtn').innerText = curLang;
@@ -179,3 +190,4 @@
     </script>
 </body>
 </html>
+
