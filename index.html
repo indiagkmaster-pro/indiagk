@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC GS No.1 Master App</title>
+    <style>
+        :root { --p: #0f172a; --s: #2563eb; --a: #f59e0b; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 12px; }
+        .card { background: white; border-radius: 18px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); max-width: 600px; margin: auto; overflow: hidden; }
+        .header { background: var(--p); color: white; padding: 25px; text-align: center; border-bottom: 4px solid var(--s); }
+        .search-area { padding: 15px; border-bottom: 1px solid #eee; display: flex; gap: 10px; }
+        #searchBox { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        .cat-btn { background: #fff; border: 1.5px solid #e2e8f0; padding: 20px 10px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; transition: 0.2s; }
+        .cat-btn:hover { border-color: var(--s); background: #f0f9ff; }
+        .quiz-view, .review-view { display: none; padding: 20px; }
+        .option { width: 100%; padding: 14px; margin: 8px 0; border: 1.5px solid #ddd; border-radius: 10px; background: white; text-align: left; cursor: pointer; }
+        .correct { background: #dcfce7 !important; border-color: #22c55e !important; }
+        .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; }
+        .explanation { margin-top: 15px; padding: 15px; background: #fffbeb; border-left: 5px solid var(--a); border-radius: 5px; font-size: 14px; }
+        .lang-btn { background: var(--a); color: white; border: none; padding: 6px 12px; border-radius: 20px; float: right; font-size: 11px; font-weight: bold; }
+        .tag { color: #64748b; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div id="home-view" class="card">
+    <div class="header">
+        <h2>🏆 SSC GS MAHASAGAR</h2>
+        <p>Articles • Game Quiz • Year-wise PYQ</p>
+    </div>
+    <div class="search-area">
+        <input type="text" id="searchBox" placeholder="Search: History, AI, Map..." onkeyup="searchFn()">
+    </div>
+    <div class="grid" id="menuGrid">
+        <div class="cat-btn" onclick="startQuiz('History')">📜<br>History</div>
+        <div class="cat-btn" onclick="startQuiz('Geography')">🌍<br>Geography</div>
+        <div class="cat-btn" onclick="startQuiz('Polity')">⚖️<br>Polity</div>
+        <div class="cat-btn" onclick="startQuiz('Economics')">💰<br>Economics</div>
+        <div class="cat-btn" onclick="startQuiz('Physics')">⚛️<br>Physics</div>
+        <div class="cat-btn" onclick="startQuiz('Chemistry')">🧪<br>Chemistry</div>
+        <div class="cat-btn" onclick="startQuiz('Biology')">🧬<br>Biology</div>
+        <div class="cat-btn" onclick="startQuiz('IR')">🤝<br>Intl. Relations</div>
+        <div class="cat-btn" onclick="startQuiz('Static')">📍<br>Static GK</div>
+        <div class="cat-btn" onclick="startQuiz('Maps')">🗺️<br>Maps Special</div>
+        <div class="cat-btn" onclick="startQuiz('TechFolder')" style="grid-column: span 2; background: #fff7ed; border-color: var(--a);">🚀 Science & Tech (AI, Space, Nuclear)</div>
+    </div>
+</div>
+
+<div id="quiz-view" class="card quiz-view">
+    <button onclick="location.reload()" style="background:none; border:none; color:var(--s); cursor:pointer;">🏠 Home</button>
+    <button class="lang-btn" onclick="toggleLang()">HINDI / ENG</button>
+    <div id="quiz-box" style="margin-top:20px;"></div>
+</div>
+
+<div id="review-view" class="card review-view">
+    <h2 style="text-align:center;">Review Session</h2>
+    <div id="review-content"></div>
+    <button onclick="location.reload()" style="width:100%; padding:15px; background:var(--p); color:white; border:none; border-radius:10px; margin-top:20px;">Exit & Go Home</button>
+</div>
+
+<script>
+    let curLang = 'hi'; let curQIdx = 0; let curCat = ''; let userLog = [];
+    
+    // Yahan hum Mega Data bharenge
+    const masterData = {
+        'TechFolder': [
+            {
+                en: { q: "Which mission made India the first to land near Moon's South Pole?", a: ["Chandrayaan-1", "Chandrayaan-2", "Chandrayaan-3", "Mangalyaan"], c: "Chandrayaan-3", ex: "Launched on 14 July 2023, landed on 23 Aug 2023.", tag: "SSC CGL 2024" },
+                hi: { q: "किस मिशन ने भारत को चंद्रमा के दक्षिणी ध्रुव के पास उतरने वाला पहला देश बनाया?", a: ["चंद्रयान-1", "चंद्रयान-2", "चंद्रयान-3", "मंगलयान"], c: "चंद्रयान-3", ex: "14 जुलाई 2023 को लॉन्च हुआ, 23 अगस्त 2023 को लैंडिंग हुई।", tag: "SSC CGL 2024" }
+            }
+        ],
+        'History': [
+            {
+                en: { q: "Who was the founder of Slave Dynasty?", a: ["Iltutmish", "Balban", "Qutubuddin Aibak", "Razia Sultan"], c: "Qutubuddin Aibak", ex: "Founded in 1206 AD.", tag: "SSC MTS 2022" },
+                hi: { q: "गुलाम वंश का संस्थापक कौन था?", a: ["इल्तुतमिश", "बलबन", "कुतुबुद्दीन ऐबक", "रज़िया सुल्तान"], c: "कुतुबुद्दीन ऐबक", ex: "1206 ईस्वी में स्थापना हुई।", tag: "SSC MTS 2022" }
+            }
+        ]
+        // Baki categories ka data kal reset hone par add hoga...
+    };
+
+    function startQuiz(cat) {
+        curCat = cat; curQIdx = 0; userLog = [];
+        document.getElementById('home-view').style.display = 'none';
+        document.getElementById('quiz-view').style.display = 'block';
+        if(masterData[cat]) renderQ();
+        else document.getElementById('quiz-box').innerHTML = "Coming Soon...";
+    }
+
+    function renderQ() {
+        const q = masterData[curCat][curQIdx][curLang];
+        let h = `<span class="tag">📅 ${q.tag}</span><h3>${q.q}</h3>`;
+        q.a.forEach(opt => {
+            h += `<button class="option" onclick="check('${opt}', '${q.c}', '${q.ex}')">${opt}</button>`;
+        });
+        document.getElementById('quiz-box').innerHTML = h;
+    }
+
+    function check(sel, cor, ex) {
+        const opts = document.querySelectorAll('.option');
+        opts.forEach(o => o.disabled = true);
+        userLog.push({ q: masterData[curCat][curQIdx][curLang].q, sel, cor });
+        
+        opts.forEach(o => {
+            if(o.innerText === cor) o.classList.add('correct');
+            if(o.innerText === sel && sel !== cor) o.classList.add('wrong');
+        });
+
+        document.getElementById('quiz-box').innerHTML += `<div class="explanation"><b>💡 Vyakhya:</b> ${ex}</div>
+        <button onclick="next()" style="width:100%; background:black; color:white; padding:12px; border:none; border-radius:8px; margin-top:15px;">Next Question ➔</button>`;
+    }
+
+    function next() {
+        curQIdx++;
+        if(curQIdx < masterData[curCat].length) renderQ();
+        else showReview();
+    }
+
+    function showReview() {
+        document.getElementById('quiz-view').style.display = 'none';
+        document.getElementById('review-view').style.display = 'block';
+        let h = '';
+        userLog.forEach((l, i) => {
+            h += `<div style="border-bottom:1px solid #eee; padding:10px;">
+                <p><b>Q${i+1}:</b> ${l.q}</p>
+                <p style="color:${l.sel===l.cor?'green':'red'}">Your: ${l.sel} | Correct: ${l.cor}</p>
+            </div>`;
+        });
+        document.getElementById('review-content').innerHTML = h;
+    }
+
+    function toggleLang() { curLang = curLang === 'hi' ? 'en' : 'hi'; renderQ(); }
+    function searchFn() { /* Search logic */ }
+</script>
+</body>
+</html>
+
