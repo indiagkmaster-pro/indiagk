@@ -3,153 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSC GS No.1 Master App</title>
+    <title>SSC GS Master Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --p: #0f172a; --s: #2563eb; --a: #f59e0b; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 12px; }
-        .card { background: white; border-radius: 18px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); max-width: 600px; margin: auto; overflow: hidden; }
-        .header { background: var(--p); color: white; padding: 25px; text-align: center; border-bottom: 4px solid var(--s); }
-        .search-area { padding: 15px; border-bottom: 1px solid #eee; display: flex; gap: 10px; }
-        #searchBox { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
-        .cat-btn { background: #fff; border: 1.5px solid #e2e8f0; padding: 20px 10px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; transition: 0.2s; }
-        .cat-btn:hover { border-color: var(--s); background: #f0f9ff; }
-        .quiz-view, .review-view { display: none; padding: 20px; }
-        .option { width: 100%; padding: 14px; margin: 8px 0; border: 1.5px solid #ddd; border-radius: 10px; background: white; text-align: left; cursor: pointer; }
+        .cat-btn { transition: 0.3s; border-bottom: 4px solid #2563eb; }
+        .cat-btn:active { transform: scale(0.95); }
+        .option-btn { width: 100%; text-align: left; padding: 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; background: white; }
         .correct { background: #dcfce7 !important; border-color: #22c55e !important; }
         .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; }
-        .explanation { margin-top: 15px; padding: 15px; background: #fffbeb; border-left: 5px solid var(--a); border-radius: 5px; font-size: 14px; }
-        .lang-btn { background: var(--a); color: white; border: none; padding: 6px 12px; border-radius: 20px; float: right; font-size: 11px; font-weight: bold; }
-        .tag { color: #64748b; font-size: 11px; font-weight: 800; text-transform: uppercase; }
     </style>
 </head>
-<body>
+<body class="bg-gray-100">
 
-<div id="home-view" class="card">
-    <div class="header">
-        <h2>🏆 SSC GS MAHASAGAR</h2>
-        <p>Articles • Game Quiz • Year-wise PYQ</p>
+    <nav class="bg-blue-600 text-white p-4 text-center font-bold shadow-lg sticky top-0">
+        🏆 SSC GS MAHASAGAR (Live Data)
+    </nav>
+
+    <div id="home-view" class="p-4 grid grid-cols-2 gap-4">
+        <div class="col-span-2 text-center p-10 text-gray-500" id="loader">Data Loading from Google Sheets...</div>
     </div>
-    <div class="search-area">
-        <input type="text" id="searchBox" placeholder="Search: History, AI, Map..." onkeyup="searchFn()">
+
+    <div id="quiz-view" class="hidden p-4">
+        <button onclick="location.reload()" class="text-blue-600 font-bold mb-4">← Home</button>
+        <div id="quiz-box" class="bg-white p-6 rounded-xl shadow-md"></div>
     </div>
-    <div class="grid" id="menuGrid">
-        <div class="cat-btn" onclick="startQuiz('History')">📜<br>History</div>
-        <div class="cat-btn" onclick="startQuiz('Geography')">🌍<br>Geography</div>
-        <div class="cat-btn" onclick="startQuiz('Polity')">⚖️<br>Polity</div>
-        <div class="cat-btn" onclick="startQuiz('Economics')">💰<br>Economics</div>
-        <div class="cat-btn" onclick="startQuiz('Physics')">⚛️<br>Physics</div>
-        <div class="cat-btn" onclick="startQuiz('Chemistry')">🧪<br>Chemistry</div>
-        <div class="cat-btn" onclick="startQuiz('Biology')">🧬<br>Biology</div>
-        <div class="cat-btn" onclick="startQuiz('Static')">📍<br>Static GK</div>
-        <div class="cat-btn" onclick="startQuiz('Maps')">🗺️<br>Maps Special</div>
-        <div class="cat-btn" onclick="startQuiz('TechFolder')" style="grid-column: span 2; background: #fff7ed; border-color: var(--a);">🚀 Science & Tech (AI, Space, Nuclear)</div>
-    </div>
-</div>
 
-<div id="quiz-view" class="card quiz-view">
-    <button onclick="location.reload()" style="background:none; border:none; color:var(--s); cursor:pointer;">🏠 Home</button>
-    <button class="lang-btn" onclick="toggleLang()">HINDI / ENG</button>
-    <div id="quiz-box" style="margin-top:20px;"></div>
-</div>
+    <script>
+        const sheetId = '1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs';
+        const base = `https://opensheet.elk.sh/${sheetId}/Sheet1`;
+        let masterData = {};
+        let curCat = '';
+        let curIdx = 0;
 
-<script>
-    let curLang = 'hi'; let curQIdx = 0; let curCat = ''; let userLog = [];
-    
-     const masterData = {
-        'TechFolder': [
-            {
-                en: { q: "Which mission made India the first to land near Moon's South Pole?", a: ["Chandrayaan-1", "Chandrayaan-2", "Chandrayaan-3", "Mangalyaan"], c: "Chandrayaan-3", ex: "Launched on 14 July 2023, landed on 23 Aug 2023.", tag: "SSC CGL 2024" },
-                hi: { q: "किस मिशन ने भारत को चंद्रमा के दक्षिणी ध्रुव के पास उतरने वाला पहला देश बनाया?", a: ["चंद्रयान-1", "चंद्रयान-2", "चंद्रयान-3", "मंगलयान"], c: "चंद्रयान-3", ex: "14 जुलाई 2023 को लॉन्च हुआ, 23 अगस्त 2023 को लैंडिंग हुई।", tag: "SSC CGL 2024" }
-            },
-            {
-                en: { q: "What is the full form of AI?", a: ["Auto Intelligence", "Artificial Intelligence", "Advanced Info", "Air Intel"], c: "Artificial Intelligence", ex: "AI simulates human intelligence in machines.", tag: "Tech 2024" },
-                hi: { q: "AI का पूर्ण रूप क्या है?", a: ["ऑटो इंटेलिजेंस", "आर्टिफिशियल इंटेलिजेंस", "एडवांस इंफो", "एयर इंटेल"], c: "आर्टिफिशियल इंटेलिजेंस", ex: "AI मशीनों में मानवीय बुद्धिमत्ता का अनुकरण करता है।", tag: "Tech 2024" }
-            }
-        ],
-        'History': [
-            {
-                en: { q: "Who was the founder of Slave Dynasty?", a: ["Iltutmish", "Balban", "Qutubuddin Aibak", "Razia Sultan"], c: "Qutubuddin Aibak", ex: "Founded in 1206 AD.", tag: "SSC MTS 2022" },
-                hi: { q: "गुलाम वंश का संस्थापक कौन था?", a: ["इल्तुतमिश", "बलबन", "कुतुबुद्दीन ऐबक", "रज़िया सुल्तान"], c: "कुतुबुद्दीन ऐबक", ex: "1206 ईस्वी में स्थापना हुई।", tag: "SSC MTS 2022" }
-            }
-        ],
-        'Geography': [
-            {
-                en: { q: "Which river is known as the 'Sorrow of Bihar'?", a: ["Ganga", "Kosi", "Son", "Gandak"], c: "Kosi", ex: "Kosi changes its course frequently causing floods.", tag: "SSC 2023" },
-                hi: { q: "किस नदी को 'बिहार का शोक' कहा जाता है?", a: ["गंगा", "कोसी", "सोन", "गंडक"], c: "कोसी", ex: "कोसी नदी अपना मार्ग बदलने और बाढ़ के लिए जानी जाती है।", tag: "SSC 2023" }
-            }
-        ],
-        'Polity': [
-            {
-                en: { q: "Who is the Constitutional Head of India?", a: ["Prime Minister", "Chief Justice", "President", "Speaker"], c: "President", ex: "Article 52-62 deals with the President of India.", tag: "SSC CGL 2022" },
-                hi: { q: "भारत का संवैधानिक प्रमुख कौन होता है?", a: ["प्रधानमंत्री", "मुख्य न्यायाधीश", "राष्ट्रपति", "स्पीकर"], c: "राष्ट्रपति", ex: "अनुच्छेद 52-62 भारत के राष्ट्रपति से संबंधित हैं।", tag: "SSC CGL 2022" }
-            }
-        ],
-        'Science': [
-            {
-                en: { q: "Which gas is known as Laughing Gas?", a: ["Nitrogen", "Nitrous Oxide", "Methane", "Argon"], c: "Nitrous Oxide", ex: "N2O is used as an anesthetic and laughing gas.", tag: "SSC CHSL" },
-                hi: { q: "किस गैस को लाफिंग गैस के नाम से जाना जाता है?", a: ["नाइट्रोजन", "नाइट्रस ऑक्साइड", "मीथेन", "आर्गन"], c: "नाइट्रस ऑक्साइड", ex: "N2O का उपयोग संवेदनाहारी और लाफिंग गैस के रूप में होता है।", tag: "SSC CHSL" }
-            }
-        ],
-        'Economics': [
-            {
-                en: { q: "When was NITI Aayog established?", a: ["2014", "2015", "2016", "2017"], c: "2015", ex: "Replaced Planning Commission on 1st Jan 2015.", tag: "SSC MTS" },
-                hi: { q: "नीति आयोग की स्थापना कब हुई थी?", a: ["2014", "2015", "2016", "2017"], c: "2015", ex: "1 जनवरी 2015 को योजना आयोग की जगह बना।", tag: "SSC MTS" }
-            }
-        ],
-        'Static': [
-            {
-                en: { q: "Where is the headquarters of ISRO?", a: ["Delhi", "Mumbai", "Bengaluru", "Chennai"], c: "Bengaluru", ex: "Established in 1969.", tag: "Static GK" },
-                hi: { q: "इसरो (ISRO) का मुख्यालय कहाँ है?", a: ["दिल्ली", "मुंबई", "बेंगलुरु", "चेन्नई"], c: "बेंगलुरु", ex: "इसकी स्थापना 1969 में हुई थी।", tag: "Static GK" }
-            }
-        ],
-        'Maps': [
-            {
-                en: { q: "Which line divides India and Pakistan?", a: ["McMahon Line", "Radcliffe Line", "Durand Line", "Palk Strait"], c: "Radcliffe Line", ex: "Drawn by Sir Cyril Radcliffe in 1947.", tag: "Map Special" },
-                hi: { q: "भारत और पाकिस्तान को कौन सी रेखा विभाजित करती है?", a: ["मैकमोहन रेखा", "रेडक्लिफ रेखा", "डूरंड रेखा", "पाक जलडमरूमध्य"], c: "रेडक्लिफ रेखा", ex: "1947 में सर सिरिल रेडक्लिफ द्वारा खींची गई थी।", tag: "Map Special" }
-            }
-        ]
-    };
+        // Fetch Data from Google Sheets
+        fetch(base)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('loader').classList.add('hidden');
+                // Group data by Category
+                data.forEach(item => {
+                    if (!masterData[item.Category]) masterData[item.Category] = [];
+                    masterData[item.Category].push(item);
+                });
+                renderMenu();
+            });
 
-    function startQuiz(cat) {
-        curCat = cat; curQIdx = 0; userLog = [];
-        document.getElementById('home-view').style.display = 'none';
-        document.getElementById('quiz-view').style.display = 'block';
-        if(masterData[cat]) renderQ();
-        else document.getElementById('quiz-box').innerHTML = "<div style='padding:20px; text-align:center;'>🚀 Data for <b>"+cat+"</b> is being updated. Coming Soon!</div>";
-    }
+        function renderMenu() {
+            const menu = document.getElementById('home-view');
+            Object.keys(masterData).forEach(cat => {
+                const btn = document.createElement('div');
+                btn.className = "cat-btn bg-white p-6 rounded-xl shadow-md text-center font-bold cursor-pointer";
+                btn.innerHTML = `📂<br>${cat}`;
+                btn.onclick = () => startQuiz(cat);
+                menu.appendChild(btn);
+            });
+        }
 
-    function renderQ() {
-        const q = masterData[curCat][curQIdx][curLang];
-        let h = `<span class="tag">📅 ${q.tag}</span><h3 style="margin-top:10px;">${q.q}</h3>`;
-        q.a.forEach(opt => {
-            h += `<button class="option" onclick="check('${opt.replace(/'/g, "\\'")}', '${q.c.replace(/'/g, "\\'")}', '${q.ex.replace(/'/g, "\\'")}')">${opt}</button>`;
-        });
-        document.getElementById('quiz-box').innerHTML = h;
-    }
+        function startQuiz(cat) {
+            curCat = cat; curIdx = 0;
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('quiz-view').classList.remove('hidden');
+            renderQuestion();
+        }
 
-    function check(sel, cor, ex) {
-        const opts = document.querySelectorAll('.option');
-        opts.forEach(o => o.disabled = true);
-        userLog.push({ q: masterData[curCat][curQIdx][curLang].q, sel, cor });
-        
-        opts.forEach(o => {
-            if(o.innerText === cor) o.classList.add('correct');
-            if(o.innerText === sel && sel !== cor) o.classList.add('wrong');
-        });
+        function renderQuestion() {
+            const q = masterData[curCat][curIdx];
+            const box = document.getElementById('quiz-box');
+            box.innerHTML = `
+                <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded font-bold">${q.Tag}</span>
+                <p class="text-lg font-bold mt-3">${q.Question_HI}</p>
+                <div class="mt-4">
+                    <button class="option-btn" onclick="checkAns(this, '${q.Option1}', '${q.Correct_Answer}', '${q.Explanation}')">${q.Option1}</button>
+                    <button class="option-btn" onclick="checkAns(this, '${q.Option2}', '${q.Correct_Answer}', '${q.Explanation}')">${q.Option2}</button>
+                    <button class="option-btn" onclick="checkAns(this, '${q.Option3}', '${q.Correct_Answer}', '${q.Explanation}')">${q.Option3}</button>
+                    <button class="option-btn" onclick="checkAns(this, '${q.Option4}', '${q.Correct_Answer}', '${q.Explanation}')">${q.Option4}</button>
+                </div>
+                <div id="result-box" class="hidden mt-4 p-4 bg-yellow-50 rounded-lg text-sm border-l-4 border-yellow-400"></div>
+            `;
+        }
 
-        document.getElementById('quiz-box').innerHTML += `<div class="explanation"><b>💡 Vyakhya:</b> ${ex}</div>
-        <button onclick="next()" style="width:100%; background:black; color:white; padding:15px; border:none; border-radius:10px; margin-top:15px; cursor:pointer; font-weight:bold;">Next Question ➔</button>`;
-    }
+        function checkAns(btn, selected, correct, ex) {
+            const resultBox = document.getElementById('result-box');
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach(b => b.disabled = true);
 
-    function next() {
-        curQIdx++;
-        if(curQIdx < masterData[curCat].length) renderQ();
-        else alert("Quiz Finished! Well done.");
-    }
+            if (selected === correct) {
+                btn.classList.add('correct', 'text-white');
+            } else {
+                btn.classList.add('wrong', 'text-white');
+                btns.forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
+            }
 
-    function toggleLang() { curLang = curLang === 'hi' ? 'en' : 'hi'; renderQ(); }
-    function searchFn() { /* Search logic */ }
-</script>
+            resultBox.innerHTML = `<b>💡 व्याख्या:</b> ${ex} <br><br>
+                <button onclick="nextQ()" class="w-full bg-black text-white p-3 rounded-lg font-bold">अगला सवाल ➔</button>`;
+            resultBox.classList.remove('hidden');
+        }
+
+        function nextQ() {
+            curIdx++;
+            if (curIdx < masterData[curCat].length) renderQuestion();
+            else { alert("Quiz Finished!"); location.reload(); }
+        }
+    </script>
 </body>
 </html>
