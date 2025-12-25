@@ -41,7 +41,6 @@
         <div class="cat-btn" onclick="startQuiz('Physics')">⚛️<br>Physics</div>
         <div class="cat-btn" onclick="startQuiz('Chemistry')">🧪<br>Chemistry</div>
         <div class="cat-btn" onclick="startQuiz('Biology')">🧬<br>Biology</div>
-        <div class="cat-btn" onclick="startQuiz('IR')">🤝<br>Intl. Relations</div>
         <div class="cat-btn" onclick="startQuiz('Static')">📍<br>Static GK</div>
         <div class="cat-btn" onclick="startQuiz('Maps')">🗺️<br>Maps Special</div>
         <div class="cat-btn" onclick="startQuiz('TechFolder')" style="grid-column: span 2; background: #fff7ed; border-color: var(--a);">🚀 Science & Tech (AI, Space, Nuclear)</div>
@@ -54,16 +53,9 @@
     <div id="quiz-box" style="margin-top:20px;"></div>
 </div>
 
-<div id="review-view" class="card review-view">
-    <h2 style="text-align:center;">Review Session</h2>
-    <div id="review-content"></div>
-    <button onclick="location.reload()" style="width:100%; padding:15px; background:var(--p); color:white; border:none; border-radius:10px; margin-top:20px;">Exit & Go Home</button>
-</div>
-
 <script>
     let curLang = 'hi'; let curQIdx = 0; let curCat = ''; let userLog = [];
     
-    // Yahan hum Mega Data bharenge
      const masterData = {
         'TechFolder': [
             {
@@ -72,7 +64,7 @@
             },
             {
                 en: { q: "What is the full form of AI?", a: ["Auto Intelligence", "Artificial Intelligence", "Advanced Info", "Air Intel"], c: "Artificial Intelligence", ex: "AI simulates human intelligence in machines.", tag: "Tech 2024" },
-                hi: { q: "AI का पूर्ण रूप क्या है?", a: ["ऑटो इंटेलिजेंस", "आर्टिफिशियल इंटेलिजेंस", "एडवांस इंफो", "एयर इंटेल"], c: "आर्टificial इंटेलिजेंस", ex: "AI मशीनों में मानवीय बुद्धिमत्ता का अनुकरण करता है।", tag: "Tech 2024" }
+                hi: { q: "AI का पूर्ण रूप क्या है?", a: ["ऑटो इंटेलिजेंस", "आर्टिफिशियल इंटेलिजेंस", "एडवांस इंफो", "एयर इंटेल"], c: "आर्टिफिशियल इंटेलिजेंस", ex: "AI मशीनों में मानवीय बुद्धिमत्ता का अनुकरण करता है।", tag: "Tech 2024" }
             }
         ],
         'History': [
@@ -96,7 +88,7 @@
         'Science': [
             {
                 en: { q: "Which gas is known as Laughing Gas?", a: ["Nitrogen", "Nitrous Oxide", "Methane", "Argon"], c: "Nitrous Oxide", ex: "N2O is used as an anesthetic and laughing gas.", tag: "SSC CHSL" },
-                hi: { q: "किस गैस को लाफिंग गैस के नाम as जाना जाता है?", a: ["नाइट्रोजन", "नाइट्रस ऑक्साइड", "मीथेन", "आर्गन"], c: "नाइट्रस ऑक्साइड", ex: "N2O का उपयोग संवेदनाहारी और लाफिंग गैस के रूप में होता है।", tag: "SSC CHSL" }
+                hi: { q: "किस गैस को लाफिंग गैस के नाम से जाना जाता है?", a: ["नाइट्रोजन", "नाइट्रस ऑक्साइड", "मीथेन", "आर्गन"], c: "नाइट्रस ऑक्साइड", ex: "N2O का उपयोग संवेदनाहारी और लाफिंग गैस के रूप में होता है।", tag: "SSC CHSL" }
             }
         ],
         'Economics': [
@@ -118,22 +110,20 @@
             }
         ]
     };
-        // Baki categories ka data kal reset hone par add hoga...
-    };
 
     function startQuiz(cat) {
         curCat = cat; curQIdx = 0; userLog = [];
         document.getElementById('home-view').style.display = 'none';
         document.getElementById('quiz-view').style.display = 'block';
         if(masterData[cat]) renderQ();
-        else document.getElementById('quiz-box').innerHTML = "Coming Soon...";
+        else document.getElementById('quiz-box').innerHTML = "<div style='padding:20px; text-align:center;'>🚀 Data for <b>"+cat+"</b> is being updated. Coming Soon!</div>";
     }
 
     function renderQ() {
         const q = masterData[curCat][curQIdx][curLang];
-        let h = `<span class="tag">📅 ${q.tag}</span><h3>${q.q}</h3>`;
+        let h = `<span class="tag">📅 ${q.tag}</span><h3 style="margin-top:10px;">${q.q}</h3>`;
         q.a.forEach(opt => {
-            h += `<button class="option" onclick="check('${opt}', '${q.c}', '${q.ex}')">${opt}</button>`;
+            h += `<button class="option" onclick="check('${opt.replace(/'/g, "\\'")}', '${q.c.replace(/'/g, "\\'")}', '${q.ex.replace(/'/g, "\\'")}')">${opt}</button>`;
         });
         document.getElementById('quiz-box').innerHTML = h;
     }
@@ -149,26 +139,13 @@
         });
 
         document.getElementById('quiz-box').innerHTML += `<div class="explanation"><b>💡 Vyakhya:</b> ${ex}</div>
-        <button onclick="next()" style="width:100%; background:black; color:white; padding:12px; border:none; border-radius:8px; margin-top:15px;">Next Question ➔</button>`;
+        <button onclick="next()" style="width:100%; background:black; color:white; padding:15px; border:none; border-radius:10px; margin-top:15px; cursor:pointer; font-weight:bold;">Next Question ➔</button>`;
     }
 
     function next() {
         curQIdx++;
         if(curQIdx < masterData[curCat].length) renderQ();
-        else showReview();
-    }
-
-    function showReview() {
-        document.getElementById('quiz-view').style.display = 'none';
-        document.getElementById('review-view').style.display = 'block';
-        let h = '';
-        userLog.forEach((l, i) => {
-            h += `<div style="border-bottom:1px solid #eee; padding:10px;">
-                <p><b>Q${i+1}:</b> ${l.q}</p>
-                <p style="color:${l.sel===l.cor?'green':'red'}">Your: ${l.sel} | Correct: ${l.cor}</p>
-            </div>`;
-        });
-        document.getElementById('review-content').innerHTML = h;
+        else alert("Quiz Finished! Well done.");
     }
 
     function toggleLang() { curLang = curLang === 'hi' ? 'en' : 'hi'; renderQ(); }
@@ -176,4 +153,3 @@
 </script>
 </body>
 </html>
-
