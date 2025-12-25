@@ -64,11 +64,15 @@
     let curLang = 'hi'; let curQIdx = 0; let curCat = ''; let userLog = [];
     
     // Yahan hum Mega Data bharenge
-    const masterData = {
+     const masterData = {
         'TechFolder': [
             {
                 en: { q: "Which mission made India the first to land near Moon's South Pole?", a: ["Chandrayaan-1", "Chandrayaan-2", "Chandrayaan-3", "Mangalyaan"], c: "Chandrayaan-3", ex: "Launched on 14 July 2023, landed on 23 Aug 2023.", tag: "SSC CGL 2024" },
                 hi: { q: "किस मिशन ने भारत को चंद्रमा के दक्षिणी ध्रुव के पास उतरने वाला पहला देश बनाया?", a: ["चंद्रयान-1", "चंद्रयान-2", "चंद्रयान-3", "मंगलयान"], c: "चंद्रयान-3", ex: "14 जुलाई 2023 को लॉन्च हुआ, 23 अगस्त 2023 को लैंडिंग हुई।", tag: "SSC CGL 2024" }
+            },
+            {
+                en: { q: "What is the full form of AI?", a: ["Auto Intelligence", "Artificial Intelligence", "Advanced Info", "Air Intel"], c: "Artificial Intelligence", ex: "AI simulates human intelligence in machines.", tag: "Tech 2024" },
+                hi: { q: "AI का पूर्ण रूप क्या है?", a: ["ऑटो इंटेलिजेंस", "आर्टिफिशियल इंटेलिजेंस", "एडवांस इंफो", "एयर इंटेल"], c: "आर्टificial इंटेलिजेंस", ex: "AI मशीनों में मानवीय बुद्धिमत्ता का अनुकरण करता है।", tag: "Tech 2024" }
             }
         ],
         'History': [
@@ -76,7 +80,44 @@
                 en: { q: "Who was the founder of Slave Dynasty?", a: ["Iltutmish", "Balban", "Qutubuddin Aibak", "Razia Sultan"], c: "Qutubuddin Aibak", ex: "Founded in 1206 AD.", tag: "SSC MTS 2022" },
                 hi: { q: "गुलाम वंश का संस्थापक कौन था?", a: ["इल्तुतमिश", "बलबन", "कुतुबुद्दीन ऐबक", "रज़िया सुल्तान"], c: "कुतुबुद्दीन ऐबक", ex: "1206 ईस्वी में स्थापना हुई।", tag: "SSC MTS 2022" }
             }
+        ],
+        'Geography': [
+            {
+                en: { q: "Which river is known as the 'Sorrow of Bihar'?", a: ["Ganga", "Kosi", "Son", "Gandak"], c: "Kosi", ex: "Kosi changes its course frequently causing floods.", tag: "SSC 2023" },
+                hi: { q: "किस नदी को 'बिहार का शोक' कहा जाता है?", a: ["गंगा", "कोसी", "सोन", "गंडक"], c: "कोसी", ex: "कोसी नदी अपना मार्ग बदलने और बाढ़ के लिए जानी जाती है।", tag: "SSC 2023" }
+            }
+        ],
+        'Polity': [
+            {
+                en: { q: "Who is the Constitutional Head of India?", a: ["Prime Minister", "Chief Justice", "President", "Speaker"], c: "President", ex: "Article 52-62 deals with the President of India.", tag: "SSC CGL 2022" },
+                hi: { q: "भारत का संवैधानिक प्रमुख कौन होता है?", a: ["प्रधानमंत्री", "मुख्य न्यायाधीश", "राष्ट्रपति", "स्पीकर"], c: "राष्ट्रपति", ex: "अनुच्छेद 52-62 भारत के राष्ट्रपति से संबंधित हैं।", tag: "SSC CGL 2022" }
+            }
+        ],
+        'Science': [
+            {
+                en: { q: "Which gas is known as Laughing Gas?", a: ["Nitrogen", "Nitrous Oxide", "Methane", "Argon"], c: "Nitrous Oxide", ex: "N2O is used as an anesthetic and laughing gas.", tag: "SSC CHSL" },
+                hi: { q: "किस गैस को लाफिंग गैस के नाम as जाना जाता है?", a: ["नाइट्रोजन", "नाइट्रस ऑक्साइड", "मीथेन", "आर्गन"], c: "नाइट्रस ऑक्साइड", ex: "N2O का उपयोग संवेदनाहारी और लाफिंग गैस के रूप में होता है।", tag: "SSC CHSL" }
+            }
+        ],
+        'Economics': [
+            {
+                en: { q: "When was NITI Aayog established?", a: ["2014", "2015", "2016", "2017"], c: "2015", ex: "Replaced Planning Commission on 1st Jan 2015.", tag: "SSC MTS" },
+                hi: { q: "नीति आयोग की स्थापना कब हुई थी?", a: ["2014", "2015", "2016", "2017"], c: "2015", ex: "1 जनवरी 2015 को योजना आयोग की जगह बना।", tag: "SSC MTS" }
+            }
+        ],
+        'Static': [
+            {
+                en: { q: "Where is the headquarters of ISRO?", a: ["Delhi", "Mumbai", "Bengaluru", "Chennai"], c: "Bengaluru", ex: "Established in 1969.", tag: "Static GK" },
+                hi: { q: "इसरो (ISRO) का मुख्यालय कहाँ है?", a: ["दिल्ली", "मुंबई", "बेंगलुरु", "चेन्नई"], c: "बेंगलुरु", ex: "इसकी स्थापना 1969 में हुई थी।", tag: "Static GK" }
+            }
+        ],
+        'Maps': [
+            {
+                en: { q: "Which line divides India and Pakistan?", a: ["McMahon Line", "Radcliffe Line", "Durand Line", "Palk Strait"], c: "Radcliffe Line", ex: "Drawn by Sir Cyril Radcliffe in 1947.", tag: "Map Special" },
+                hi: { q: "भारत और पाकिस्तान को कौन सी रेखा विभाजित करती है?", a: ["मैकमोहन रेखा", "रेडक्लिफ रेखा", "डूरंड रेखा", "पाक जलडमरूमध्य"], c: "रेडक्लिफ रेखा", ex: "1947 में सर सिरिल रेडक्लिफ द्वारा खींची गई थी।", tag: "Map Special" }
+            }
         ]
+    };
         // Baki categories ka data kal reset hone par add hoga...
     };
 
