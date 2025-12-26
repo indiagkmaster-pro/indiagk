@@ -12,7 +12,6 @@
         .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
         .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
         .explanation-box { margin-top: 15px; padding: 15px; border-left: 4px solid #f59e0b; background: #fffbeb; border-radius: 8px; }
-        .article-content { line-height: 1.8; color: #374151; font-size: 1.05rem; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -26,30 +25,32 @@
         <div class="col-span-2 text-center p-10 text-gray-400" id="loader">डाटा लोड हो रहा है...</div>
     </div>
 
-    <div id="chapter-view" class="hidden p-4">
-        <h2 id="cat-title" class="text-xl font-bold mb-4 text-blue-700 uppercase"></h2>
-        <div id="chapter-list"></div>
-        <button onclick="goHome()" class="w-full mt-4 text-gray-500 font-bold">← Back to Categories</button>
-    </div>
-
     <div id="mode-view" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[60]">
         <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl">
-            <h3 id="selected-chap-name" class="font-bold text-lg mb-4 text-gray-800">Chapter Name</h3>
+            <h3 id="selected-cat-name" class="font-bold text-lg mb-4 text-gray-800">Choose Mode</h3>
             <div class="grid gap-3">
-                <button onclick="showArticle()" class="bg-amber-500 text-white p-4 rounded-xl font-bold">📖 Read Article</button>
-                <button onclick="openSetSelection()" class="bg-blue-600 text-white p-4 rounded-xl font-bold">📝 Start Quiz</button>
-                <button onclick="closeModal('mode-view')" class="text-gray-400 font-bold mt-2">Cancel</button>
+                <button onclick="selectMode('Article')" class="bg-amber-500 text-white p-4 rounded-xl font-bold flex items-center justify-center gap-2">📖 Read Articles</button>
+                <button onclick="selectMode('Quiz')" class="bg-blue-600 text-white p-4 rounded-xl font-bold flex items-center justify-center gap-2">📝 Solve Quizzes</button>
+                <button onclick="closeModal('mode-view')" class="text-gray-400 font-bold mt-2">रद्द करें</button>
             </div>
         </div>
     </div>
 
+    <div id="chapter-view" class="hidden p-4">
+        <div class="flex items-center gap-2 mb-4">
+            <button onclick="goBackToHome()" class="text-blue-700 font-bold text-xl">←</button>
+            <h2 id="view-title" class="text-xl font-bold text-blue-700 uppercase">Chapters</h2>
+        </div>
+        <div id="chapter-list"></div>
+    </div>
+
     <div id="set-view" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[60]">
         <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl">
-            <h3 class="font-bold text-xl mb-4 text-gray-800">Limit चुनें</h3>
+            <h3 class="font-bold text-lg mb-4 text-gray-800">सवाल की सीमा चुनें</h3>
             <div class="grid gap-3">
                 <button onclick="confirmStart(10)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">10 Questions</button>
                 <button onclick="confirmStart(20)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">20 Questions</button>
-                <button onclick="confirmStart(30)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">30 Questions</button>
+                <button onclick="confirmStart(30)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">All Questions</button>
                 <button onclick="closeModal('set-view')" class="text-gray-400 font-bold mt-2">Back</button>
             </div>
         </div>
@@ -58,8 +59,8 @@
     <div id="article-view" class="hidden p-4 max-w-2xl mx-auto">
         <div class="bg-white p-6 rounded-2xl shadow-xl">
             <h2 id="article-title" class="text-2xl font-bold text-blue-700 mb-4 border-b"></h2>
-            <div id="article-body" class="article-content whitespace-pre-wrap text-justify"></div>
-            <button onclick="closeArticle()" class="w-full bg-gray-800 text-white p-4 rounded-xl font-bold mt-8">Back to Chapters</button>
+            <div id="article-body" class="leading-relaxed text-gray-700 whitespace-pre-wrap text-justify"></div>
+            <button onclick="closeArticle()" class="w-full bg-gray-800 text-white p-4 rounded-xl font-bold mt-8 shadow-lg">Back to Chapters</button>
         </div>
     </div>
 
@@ -72,16 +73,14 @@
         <div class="bg-white p-8 rounded-3xl shadow-xl">
             <h2 class="text-2xl font-bold text-blue-700">Result</h2>
             <div class="text-5xl font-black my-6" id="score-text">0/0</div>
-            <button onclick="location.reload()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold w-full">Home</button>
+            <button onclick="location.reload()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold w-full">Back to Home</button>
         </div>
     </div>
 
     <script>
         const sheetId = '1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs'; 
         const base = `https://opensheet.elk.sh/${sheetId}/Sheet1`;
-        let masterData = {}, curCat = '', curChap = '', curIdx = 0, curLang = 'HI', correctCount = 0, activeData = [];
-
-        window.onpopstate = () => location.reload();
+        let masterData = {}, curCat = '', curMode = '', curChap = '', curIdx = 0, curLang = 'HI', correctCount = 0, activeData = [];
 
         fetch(base, { cache: "no-store" }).then(res => res.json()).then(data => {
             document.getElementById('loader').classList.add('hidden');
@@ -95,7 +94,6 @@
                 }
             });
             renderHome();
-            window.history.pushState({view: 'home'}, "");
         });
 
         function renderHome() {
@@ -104,48 +102,44 @@
                 const btn = document.createElement('div');
                 btn.className = "cat-btn bg-white p-6 rounded-xl shadow-md text-center font-bold text-blue-700 flex flex-col items-center justify-center";
                 btn.innerHTML = `<span class="text-2xl mb-2">📚</span>${cat}`;
-                btn.onclick = () => { showChapters(cat); };
+                btn.onclick = () => { curCat = cat; document.getElementById('selected-cat-name').innerText = cat; document.getElementById('mode-view').classList.remove('hidden'); };
                 menu.appendChild(btn);
             });
         }
 
-        function showChapters(cat) {
-            curCat = cat;
+        function selectMode(mode) {
+            curMode = mode;
+            closeModal('mode-view');
             document.getElementById('home-view').classList.add('hidden');
             document.getElementById('chapter-view').classList.remove('hidden');
-            document.getElementById('cat-title').innerText = cat;
+            document.getElementById('view-title').innerText = `${curCat} - ${mode}s`;
             
             const list = document.getElementById('chapter-list');
             list.innerHTML = '';
-            Object.keys(masterData[cat]).forEach(chap => {
-                const btn = document.createElement('div');
-                btn.className = "chapter-btn";
-                btn.innerText = chap;
-                btn.onclick = () => { openMode(chap); };
-                list.appendChild(btn);
+            
+            Object.keys(masterData[curCat]).forEach(chap => {
+                // Sirf wahi chapter dikhana jisme chuna gaya Mode (Article ya Quiz) available ho
+                const hasData = masterData[curCat][chap].some(item => item.Type === mode);
+                if(hasData) {
+                    const btn = document.createElement('div');
+                    btn.className = "chapter-btn";
+                    btn.innerText = chap;
+                    btn.onclick = () => { 
+                        curChap = chap; 
+                        if(mode === 'Article') startArticle(); 
+                        else document.getElementById('set-view').classList.remove('hidden');
+                    };
+                    list.appendChild(btn);
+                }
             });
         }
 
-        function openMode(chap) {
-            curChap = chap;
-            document.getElementById('selected-chap-name').innerText = chap;
-            document.getElementById('mode-view').classList.remove('hidden');
-        }
-
-        function showArticle() {
-            closeModal('mode-view');
+        function startArticle() {
             const data = masterData[curCat][curChap].find(item => item.Type === 'Article');
-            if(data) {
-                document.getElementById('article-title').innerText = curChap;
-                document.getElementById('article-body').innerText = curLang === 'HI' ? data.Explanation_HI : (data.Explanation_EN || data.Explanation_HI);
-                document.getElementById('chapter-view').classList.add('hidden');
-                document.getElementById('article-view').classList.remove('hidden');
-            } else { alert("Article not available for this chapter."); }
-        }
-
-        function openSetSelection() {
-            closeModal('mode-view');
-            document.getElementById('set-view').classList.remove('hidden');
+            document.getElementById('article-title').innerText = curChap;
+            document.getElementById('article-body').innerText = curLang === 'HI' ? data.Explanation_HI : (data.Explanation_EN || data.Explanation_HI);
+            document.getElementById('chapter-view').classList.add('hidden');
+            document.getElementById('article-view').classList.remove('hidden');
         }
 
         function confirmStart(limit) {
@@ -170,11 +164,8 @@
             const explanation = isHI ? q.Explanation_HI : (q.Explanation_EN || q.Explanation_HI);
 
             box.innerHTML = `
-                <div class="flex justify-between mb-4 text-[10px] font-bold text-blue-500 uppercase">
-                    <span>${q.Tag || 'SSC'}</span>
-                    <span>${curIdx + 1}/${activeData.length}</span>
-                </div>
-                <h2 class="text-lg font-bold text-gray-800 mb-6 leading-tight">${question}</h2>
+                <div class="flex justify-between mb-4 text-[10px] font-bold text-blue-500 uppercase"><span>${curChap}</span><span>${curIdx + 1}/${activeData.length}</span></div>
+                <h2 class="text-lg font-bold text-gray-800 mb-6">${question}</h2>
                 <div class="grid gap-2">
                     ${options.map(opt => `<button class="option-btn" onclick="checkAns(this, '${opt}', '${correct}', '${explanation}')">${opt}</button>`).join('')}
                 </div>
@@ -186,7 +177,7 @@
             btns.forEach(b => b.style.pointerEvents = 'none');
             if (sel === cor) { btn.classList.add('correct'); correctCount++; } 
             else { btn.classList.add('wrong'); btns.forEach(b => { if(b.innerText === cor) b.classList.add('correct'); }); }
-            document.getElementById('ex-box').innerHTML = `<div class="explanation-box"><p class="text-gray-700 text-sm">${ex}</p></div><button onclick="nextQ()" class="w-full bg-blue-700 text-white p-4 rounded-xl font-bold mt-4">Next ➔</button>`;
+            document.getElementById('ex-box').innerHTML = `<div class="explanation-box"><p class="text-sm">${ex}</p></div><button onclick="nextQ()" class="w-full bg-blue-700 text-white p-4 rounded-xl font-bold mt-4">Next ➔</button>`;
             document.getElementById('ex-box').classList.remove('hidden');
         }
 
@@ -196,10 +187,10 @@
             else { document.getElementById('quiz-view').classList.add('hidden'); document.getElementById('result-view').classList.remove('hidden'); document.getElementById('score-text').innerText = `${correctCount}/${activeData.length}`; }
         }
 
+        function toggleLang() { curLang = curLang === 'HI' ? 'EN' : 'HI'; document.getElementById('langBtn').innerText = curLang; if(!document.getElementById('article-view').classList.contains('hidden')) startArticle(); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function goHome() { location.reload(); }
         function closeArticle() { document.getElementById('article-view').classList.add('hidden'); document.getElementById('chapter-view').classList.remove('hidden'); }
-        function toggleLang() { curLang = curLang === 'HI' ? 'EN' : 'HI'; document.getElementById('langBtn').innerText = curLang; }
+        function goBackToHome() { document.getElementById('chapter-view').classList.add('hidden'); document.getElementById('home-view').classList.remove('hidden'); }
     </script>
 </body>
 </html>
