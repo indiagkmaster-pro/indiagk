@@ -3,262 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSC GS Master Pro</title>
+    <title>SSC GS MASTER PRO - ULTIMATE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #f3f4f6; --card: #ffffff; --text: #1f2937; --primary: #1d4ed8; }
-        .dark { --bg: #111827; --card: #1f2937; --text: #f3f4f6; --primary: #3b82f6; }
-        body { background-color: var(--bg); color: var(--text); transition: 0.3s; font-family: sans-serif; }
-        .card { background-color: var(--card); }
-        .sidebar { transition: 0.3s transform; z-index: 100; }
-        .option-btn { width: 100%; text-align: left; padding: 14px; margin: 6px 0; border: 1px solid #d1d5db; border-radius: 12px; background: var(--card); font-weight: 500; transition: 0.2s; }
+        :root { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --primary: #2563eb; }
+        .dark { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --primary: #3b82f6; }
+        body { background-color: var(--bg); color: var(--text); transition: 0.3s ease; font-family: sans-serif; overflow-x: hidden; }
+        .card { background-color: var(--card); border: 1px solid rgba(0,0,0,0.05); }
+        .sidebar { transition: 0.4s transform; z-index: 1000; }
+        .option-btn { width: 100%; text-align: left; padding: 16px; margin: 8px 0; border-radius: 12px; border: 2px solid transparent; background: rgba(0,0,0,0.03); transition: 0.2s; font-weight: 500; }
+        .dark .option-btn { background: rgba(255,255,255,0.05); }
         .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
         .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
-        .explanation-box { margin-top: 15px; padding: 15px; border-left: 4px solid #f59e0b; background: #fffbeb; border-radius: 8px; color: #4b5563; }
-        .dark .explanation-box { background: #374151; color: #e5e7eb; }
+        .timer-bar { height: 4px; background: #2563eb; transition: linear; width: 100%; }
     </style>
 </head>
 <body class="light">
 
-    <div id="sidebar" class="sidebar fixed top-0 left-0 w-64 h-full card shadow-2xl -translate-x-full">
+    <audio id="sound-correct" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
+    <audio id="sound-wrong" src="https://assets.mixkit.co/active_storage/sfx/2105/2105-preview.mp3"></audio>
+
+    <div id="sidebar" class="sidebar fixed top-0 left-0 w-72 h-full card shadow-2xl -translate-x-full">
         <div class="p-6">
-            <h2 class="text-2xl font-bold text-blue-600 mb-8 underline decoration-double">Menu</h2>
-            <nav class="space-y-4">
-                <button onclick="toggleDarkMode()" class="w-full text-left p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-3">
-                    <i class="fas fa-moon"></i> Dark Mode
+            <h2 class="text-xl font-black text-blue-600 mb-8 tracking-tighter">APP SETTINGS</h2>
+            <div class="space-y-6">
+                <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
+                    <span>Dark Mode</span> <i id="theme-icon" class="fas fa-moon"></i>
                 </button>
-                <button onclick="adminLogin()" class="w-full text-left p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-3 text-red-500">
-                    <i class="fas fa-user-shield"></i> Admin Dashboard
-                </button>
-                <button onclick="location.reload()" class="w-full text-left p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-3">
-                    <i class="fas fa-home"></i> Home
-                </button>
-            </nav>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
+                    <span>App Sounds</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="soundToggle" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                    </label>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-gray-400 mb-2">Quiz Font Size</p>
+                    <input type="range" min="14" max="24" value="18" oninput="changeFontSize(this.value)" class="w-full">
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-gray-400 mb-2">Quiz Timer (15s)</p>
+                    <input type="checkbox" id="timerToggle" checked> Enable
+                </div>
+                <hr class="opacity-10">
+                <button onclick="adminLogin()" class="w-full text-left p-3 text-red-500 font-bold"><i class="fas fa-user-shield"></i> Admin Dashboard</button>
+                <button onclick="location.reload()" class="w-full text-left p-3 font-bold"><i class="fas fa-home"></i> Home Screen</button>
+            </div>
         </div>
     </div>
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 hidden z-50"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden z-50"></div>
 
     <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-40">
-        <div class="flex items-center gap-3">
-            <button onclick="toggleSidebar()"><i class="fas fa-bars text-xl"></i></button>
-            <span class="font-bold tracking-tight">🏆 SSC MASTER</span>
+        <div class="flex items-center gap-4">
+            <button onclick="toggleSidebar()"><i class="fas fa-bars-staggered text-xl"></i></button>
+            <h1 class="font-black text-lg">SSC MASTER <span class="text-blue-200">PRO</span></h1>
         </div>
-        <button onclick="toggleLang()" id="langBtn" class="bg-blue-500 px-4 py-1 rounded-full text-[10px] font-bold border border-white/30">HINDI</button>
+        <button onclick="toggleLang()" id="langBtn" class="bg-white/20 px-4 py-1.5 rounded-full text-[10px] font-bold border border-white/40">HINDI</button>
     </nav>
 
-    <div id="main-container" class="max-w-md mx-auto p-4">
+    <div id="main-app" class="max-w-xl mx-auto p-4">
         
-        <div id="home-view" class="grid grid-cols-2 gap-4 pt-4">
-            <div id="loader" class="col-span-2 text-center p-10 opacity-50">Loading Data...</div>
+        <div id="home-view" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div id="loading" class="col-span-full text-center py-20 opacity-50">Loading Content...</div>
         </div>
 
-        <div id="mode-view" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[60]">
-            <div class="card w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl">
-                <h3 id="selected-cat-name" class="font-bold text-lg mb-4 uppercase">Category</h3>
-                <div class="grid gap-3">
-                    <button onclick="goToArticles()" class="bg-amber-500 text-white p-4 rounded-xl font-bold">📖 Read Articles</button>
-                    <button onclick="goToQuizLimits()" class="bg-blue-600 text-white p-4 rounded-xl font-bold">📝 Start Quiz</button>
-                    <button onclick="closeModal('mode-view')" class="text-gray-400 font-bold mt-2">Cancel</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="chapter-view" class="hidden">
-            <div id="chapter-list"></div>
-        </div>
-
-        <div id="article-content-view" class="hidden">
-            <div class="card p-6 rounded-2xl shadow-xl">
-                <h2 id="art-title" class="text-2xl font-bold text-blue-600 mb-4 border-b pb-2"></h2>
-                <div id="art-body" class="leading-relaxed whitespace-pre-wrap text-justify text-sm"></div>
-                <button onclick="closeArticle()" class="w-full bg-gray-800 text-white p-4 rounded-xl font-bold mt-8">Back</button>
-            </div>
-        </div>
-
-        <div id="limit-view" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[60]">
-            <div class="card w-full max-w-xs rounded-3xl p-6 text-center">
-                <h3 class="font-bold text-lg mb-4">Set Limit</h3>
-                <div class="grid gap-3">
-                    <button onclick="startQuiz(10)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">10 Qs</button>
-                    <button onclick="startQuiz(20)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">20 Qs</button>
-                    <button onclick="startQuiz(50)" class="bg-blue-600 text-white p-3 rounded-xl font-bold">All Qs</button>
-                    <button onclick="closeModal('limit-view')" class="text-gray-400 font-bold mt-2">Back</button>
-                </div>
+        <div id="modal-view" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-[100]">
+            <div class="card w-full max-w-sm rounded-3xl p-8 shadow-2xl animate-bounce-in">
+                <div id="modal-content"></div>
+                <button onclick="closeModal()" class="w-full mt-6 text-gray-400 font-bold">Dismiss</button>
             </div>
         </div>
 
         <div id="quiz-view" class="hidden">
-            <div id="quiz-box" class="card p-6 rounded-2xl shadow-xl border border-gray-100"></div>
-            <div class="flex justify-between mt-4 items-center px-2">
+            <div id="timer-container" class="hidden w-full bg-gray-200 h-1 mb-4 rounded-full overflow-hidden">
+                <div id="timer-progress" class="timer-bar"></div>
+            </div>
+            <div id="quiz-card" class="card p-6 rounded-3xl shadow-xl min-h-[400px]">
+                <div id="quiz-content"></div>
+            </div>
+            <div class="flex justify-between items-center mt-6 px-2">
                 <button id="prevBtn" onclick="prevQ()" class="text-blue-600 font-bold disabled:opacity-30"><i class="fas fa-chevron-left"></i> Previous</button>
-                <div id="ex-box" class="hidden w-full mx-4"></div>
                 <button id="nextBtn" onclick="nextQ()" class="text-blue-600 font-bold">Next <i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
 
-        <div id="result-view" class="hidden text-center pt-10">
-            <div class="card p-8 rounded-3xl shadow-xl">
-                <h2 class="text-2xl font-bold text-blue-600">Quiz Completed!</h2>
-                <div class="text-5xl font-black my-6" id="score-text">0/0</div>
-                <div class="flex gap-2">
-                    <button onclick="location.reload()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold">Home</button>
-                    <button onclick="showReview()" class="flex-1 bg-gray-800 text-white py-3 rounded-xl font-bold">Review</button>
+        <div id="result-view" class="hidden text-center pt-6">
+            <div class="card p-10 rounded-[40px] shadow-2xl border-2 border-blue-50">
+                <h2 id="score-text" class="text-7xl font-black mb-6 text-blue-600">00</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="location.reload()" class="bg-blue-600 text-white p-4 rounded-2xl font-bold">Home</button>
+                    <button onclick="toggleReview()" class="bg-gray-800 text-white p-4 rounded-2xl font-bold">Review</button>
                 </div>
             </div>
-            <div id="review-list" class="hidden mt-6 text-left"></div>
+            <div id="review-area" class="hidden mt-8 space-y-4 pb-20"></div>
         </div>
 
     </div>
 
     <script>
-        const sheetId = '1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs'; 
-        const base = `https://opensheet.elk.sh/${sheetId}/Sheet1`;
-        let masterData = [], curCat = '', curIdx = 0, curLang = 'HI', correctCount = 0, activeData = [], userAnswers = [], isAdmin = false;
+        const API = 'https://opensheet.elk.sh/1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs/Sheet1';
+        let db = [], curCat = '', curIdx = 0, lang = 'HI', isAdmin = false, fs = 18, timerRef = null;
+        let activeData = [], userChoices = [];
 
-        fetch(base).then(res => res.json()).then(data => {
-            document.getElementById('loader').classList.add('hidden');
-            masterData = data;
+        fetch(API).then(r => r.json()).then(data => {
+            db = data;
+            document.getElementById('loading').classList.add('hidden');
             renderHome();
         });
 
         function renderHome() {
-            const menu = document.getElementById('home-view');
-            menu.innerHTML = '';
-            const categories = [...new Set(masterData.map(item => item.Category).filter(Boolean))];
-            categories.forEach(cat => {
-                const qCount = masterData.filter(i => i.Category === cat && i.Type === 'Quiz').length;
-                const btn = document.createElement('div');
-                btn.className = "card p-6 rounded-2xl shadow-md text-center font-bold text-blue-600 flex flex-col items-center justify-center cursor-pointer border-b-4 border-blue-600";
-                btn.innerHTML = `<span class="text-3xl mb-2">📂</span>${cat} ${isAdmin ? `<br><small class='text-red-400'>[Q:${qCount}]</small>` : ''}`;
-                btn.onclick = () => { curCat = cat; document.getElementById('selected-cat-name').innerText = cat; document.getElementById('mode-view').classList.remove('hidden'); };
-                menu.appendChild(btn);
+            const container = document.getElementById('home-view');
+            container.innerHTML = '';
+            const cats = [...new Set(db.map(i => i.Category).filter(Boolean))];
+            
+            cats.forEach(cat => {
+                const qCount = db.filter(i => i.Category === cat && i.Type === 'Quiz').length;
+                const div = document.createElement('div');
+                div.className = "card p-6 rounded-2xl shadow-sm border-b-4 border-blue-600 text-center cursor-pointer";
+                div.innerHTML = `
+                    <span class="text-2xl mb-2 block">📚</span>
+                    <h3 class="font-bold">${cat}</h3>
+                    ${isAdmin ? `<span class="text-[10px] text-red-500 font-bold">Q: ${qCount}</span>` : ''}
+                `;
+                div.onclick = () => openOptions(cat);
+                container.appendChild(div);
             });
         }
 
-        function toggleSidebar() {
-            const side = document.getElementById('sidebar');
-            const over = document.getElementById('overlay');
-            side.classList.toggle('-translate-x-full');
-            over.classList.toggle('hidden');
+        function openOptions(cat) {
+            curCat = cat;
+            showModal(`
+                <h3 class="text-2xl font-black mb-6 uppercase">${cat}</h3>
+                <div class="grid gap-3">
+                    <button onclick="startMode('Article')" class="p-5 bg-amber-50 text-amber-700 rounded-2xl font-bold border border-amber-100 flex justify-between items-center">📖 Read Articles <i class="fas fa-chevron-right"></i></button>
+                    <button onclick="startQuizFlow()" class="p-5 bg-blue-50 text-blue-700 rounded-2xl font-bold border border-blue-100 flex justify-between items-center">📝 Start Quiz <i class="fas fa-chevron-right"></i></button>
+                </div>
+            `);
         }
 
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark');
-            toggleSidebar();
+        function startQuizFlow() {
+            showModal(`
+                <h3 class="font-bold mb-4">Select Question Limit</h3>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="runQuiz(10)" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg font-bold">10</button>
+                    <button onclick="runQuiz(20)" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg font-bold">20</button>
+                    <button onclick="runQuiz(999)" class="bg-blue-600 text-white p-3 rounded-lg font-bold">ALL</button>
+                </div>
+            `);
         }
 
-        function adminLogin() {
-            const pass = prompt("Enter Password:");
-            if(pass === "1234") { isAdmin = true; renderHome(); alert("Admin Mode On!"); }
-            else { alert("Wrong Pass!"); }
-            toggleSidebar();
-        }
-
-        function goToArticles() {
-            closeModal('mode-view');
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('chapter-view').classList.remove('hidden');
-            const list = document.getElementById('chapter-list');
-            list.innerHTML = '';
-            const articles = masterData.filter(i => i.Category === curCat && i.Type === 'Article');
-            articles.forEach(art => {
-                const btn = document.createElement('div');
-                btn.className = "card p-4 mb-2 rounded-xl border-l-4 border-amber-500 font-bold cursor-pointer";
-                btn.innerText = art.Chapter || "General Article";
-                btn.onclick = () => { openFullArticle(art); };
-                list.appendChild(btn);
-            });
-        }
-
-        function openFullArticle(art) {
-            document.getElementById('chapter-view').classList.add('hidden');
-            document.getElementById('article-content-view').classList.remove('hidden');
-            document.getElementById('art-title').innerText = art.Chapter;
-            document.getElementById('art-body').innerText = curLang === 'HI' ? art.Explanation_HI : art.Explanation_EN;
-        }
-
-        function goToQuizLimits() {
-            closeModal('mode-view');
-            document.getElementById('limit-view').classList.remove('hidden');
-        }
-
-        function startQuiz(limit) {
-            closeModal('limit-view');
-            const questions = masterData.filter(i => i.Category === curCat && i.Type === 'Quiz');
-            activeData = questions.sort(() => 0.5 - Math.random()).slice(0, limit);
-            curIdx = 0; correctCount = 0; userAnswers = new Array(activeData.length).fill(null);
+        function runQuiz(limit) {
+            closeModal();
+            const pool = db.filter(i => i.Category === curCat && i.Type === 'Quiz');
+            activeData = pool.sort(() => 0.5 - Math.random()).slice(0, limit);
+            curIdx = 0; userChoices = new Array(activeData.length).fill(null);
             document.getElementById('home-view').classList.add('hidden');
             document.getElementById('quiz-view').classList.remove('hidden');
             renderQuestion();
         }
 
         function renderQuestion() {
+            stopTimer();
             const q = activeData[curIdx];
-            const isHI = curLang === 'HI';
-            const box = document.getElementById('quiz-box');
+            const isHI = (lang === 'HI');
             const question = isHI ? q.Question_HI : q.Question_EN;
             const correct = isHI ? q.Correct_HI : q.Correct_EN;
-            const options = isHI ? [q.Opt1_HI, q.Opt2_HI, q.Opt3_HI, q.Opt4_HI] : [q.Opt1_EN, q.Opt2_EN, q.Opt3_EN, q.Opt4_EN];
-            
+            const opts = isHI ? [q.Opt1_HI, q.Opt2_HI, q.Opt3_HI, q.Opt4_HI] : [q.Opt1_EN, q.Opt2_EN, q.Opt3_EN, q.Opt4_EN];
+            const ans = userChoices[curIdx];
+
             document.getElementById('prevBtn').disabled = (curIdx === 0);
-            
-            box.innerHTML = `
-                <div class="flex justify-between text-[10px] font-bold text-blue-500 mb-4 uppercase">
-                    <span>${curCat}</span><span>${curIdx + 1}/${activeData.length}</span>
-                </div>
-                <h2 class="text-lg font-bold mb-6 leading-tight">${question}</h2>
+            const container = document.getElementById('quiz-content');
+            container.innerHTML = `
+                <div class="flex justify-between mb-4"><span class="text-[10px] font-bold text-blue-500 uppercase">${curCat}</span><span class="text-[10px] opacity-50">${curIdx+1}/${activeData.length}</span></div>
+                <h2 style="font-size: ${fs}px" class="font-bold mb-8 leading-snug">${question}</h2>
                 <div class="space-y-2">
-                    ${options.map(opt => {
+                    ${opts.map(o => {
                         let cls = "";
-                        if(userAnswers[curIdx]) {
-                            if(opt === correct) cls = "correct";
-                            else if(opt === userAnswers[curIdx].selected) cls = "wrong";
+                        if(ans) {
+                            if(o === correct) cls = "correct";
+                            else if(o === ans.selected) cls = "wrong";
                         }
-                        return `<button class="option-btn ${cls}" onclick="handleAns('${opt}', '${correct}', '${isHI ? q.Explanation_HI : q.Explanation_EN}')">${opt}</button>`;
+                        return `<button class="option-btn ${cls}" onclick="selectAns('${o}','${correct}','${isHI?q.Explanation_HI:q.Explanation_EN}')">${o}</button>`;
                     }).join('')}
                 </div>
             `;
+            if(document.getElementById('timerToggle').checked && !ans) startTimer();
         }
 
-        function handleAns(sel, cor, ex) {
-            if(userAnswers[curIdx]) return; // Already answered
+        function selectAns(sel, cor, exp) {
+            if(userChoices[curIdx]) return;
+            stopTimer();
             const isRight = (sel === cor);
-            if(isRight) correctCount++;
-            userAnswers[curIdx] = { selected: sel, correct: cor, explanation: ex, isRight: isRight };
+            userChoices[curIdx] = { selected: sel, correct: cor, explanation: exp, isRight: isRight };
+            
+            if(document.getElementById('soundToggle').checked) {
+                const aud = document.getElementById(isRight ? 'sound-correct' : 'sound-wrong');
+                aud.currentTime = 0; aud.play();
+            }
             renderQuestion();
         }
 
-        function nextQ() {
-            if(curIdx < activeData.length - 1) { curIdx++; renderQuestion(); }
-            else { showFinalResult(); }
+        function startTimer() {
+            const bar = document.getElementById('timer-progress');
+            document.getElementById('timer-container').classList.remove('hidden');
+            bar.style.width = '100%'; bar.style.transition = 'none';
+            setTimeout(() => { bar.style.transition = 'width 15s linear'; bar.style.width = '0%'; }, 10);
+            timerRef = setTimeout(() => { nextQ(); }, 15000);
         }
 
-        function prevQ() {
-            if(curIdx > 0) { curIdx--; renderQuestion(); }
-        }
+        function stopTimer() { clearInterval(timerRef); document.getElementById('timer-container').classList.add('hidden'); }
 
-        function showFinalResult() {
+        function nextQ() { 
+            if(curIdx < activeData.length - 1) { curIdx++; renderQuestion(); } 
+            else finishQuiz(); 
+        }
+        function prevQ() { if(curIdx > 0) { curIdx--; renderQuestion(); } }
+
+        function finishQuiz() {
             document.getElementById('quiz-view').classList.add('hidden');
             document.getElementById('result-view').classList.remove('hidden');
-            document.getElementById('score-text').innerText = `${correctCount}/${activeData.length}`;
+            const score = userChoices.filter(a => a?.isRight).length;
+            document.getElementById('score-text').innerText = score.toString().padStart(2, '0');
         }
 
-        function showReview() {
-            const list = document.getElementById('review-list');
-            list.classList.remove('hidden');
-            list.innerHTML = userAnswers.map((ans, i) => `
-                <div class="card p-4 rounded-xl mb-4 border-l-4 ${ans?.isRight ? 'border-green-500' : 'border-red-500'}">
-                    <p class="font-bold text-sm">Q${i+1}: ${curLang==='HI' ? activeData[i].Question_HI : activeData[i].Question_EN}</p>
-                    <p class="text-xs mt-2 text-green-600">Correct: ${ans?.correct}</p>
-                    <div class="explanation-box text-[10px] mt-2">${ans?.explanation}</div>
+        function toggleReview() {
+            const area = document.getElementById('review-area');
+            area.classList.toggle('hidden');
+            area.innerHTML = userChoices.map((a, i) => `
+                <div class="card p-5 rounded-2xl border-l-4 ${a?.isRight ? 'border-green-500' : 'border-red-500'}">
+                    <p class="font-bold text-sm mb-2">${lang==='HI' ? activeData[i].Question_HI : activeData[i].Question_EN}</p>
+                    <p class="text-xs text-green-600 font-bold">Answer: ${a?.correct || 'N/A'}</p>
+                    <div class="mt-2 text-[11px] italic opacity-70">${a?.explanation || ''}</div>
                 </div>
             `).join('');
         }
 
-        function toggleLang() { curLang = curLang==='HI'?'EN':'HI'; document.getElementById('langBtn').innerText=curLang; if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function closeArticle() { document.getElementById('article-content-view').classList.add('hidden'); document.getElementById('chapter-view').classList.remove('hidden'); }
+        // Article Mode
+        function startMode(mode) {
+            if(mode === 'Article') {
+                const arts = db.filter(i => i.Category === curCat && i.Type === 'Article');
+                showModal(`
+                    <h3 class="font-bold mb-4 uppercase">Chapters</h3>
+                    <div class="grid gap-2">
+                        ${arts.map(a => `<button onclick="showArtContent('${a.Chapter}')" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl font-bold text-left">${a.Chapter}</button>`).join('')}
+                    </div>
+                `);
+            }
+        }
+
+        function showArtContent(chap) {
+            closeModal();
+            const art = db.find(i => i.Category === curCat && i.Chapter === chap && i.Type === 'Article');
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden'); // Reuse review area container
+            document.getElementById('score-text').innerText = chap;
+            document.getElementById('review-area').classList.remove('hidden');
+            document.getElementById('review-area').innerHTML = `<div class="card p-6 rounded-2xl leading-relaxed text-justify">${lang==='HI' ? art.Explanation_HI : art.Explanation_EN}</div><button onclick="location.reload()" class="w-full bg-gray-800 text-white p-4 rounded-xl mt-4">Close</button>`;
+        }
+
+        // Global UI
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('overlay').classList.toggle('hidden'); }
+        function toggleDarkMode() { document.body.classList.toggle('dark'); toggleSidebar(); }
+        function changeFontSize(v) { fs = v; if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); }
+        function toggleLang() { lang = (lang==='HI'?'EN':'HI'); document.getElementById('langBtn').innerText=lang; if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); }
+        function adminLogin() { if(prompt("Pass?")==="1234") { isAdmin=true; renderHome(); alert("Admin Mode Active!"); } toggleSidebar(); }
+        function showModal(html) { document.getElementById('modal-content').innerHTML = html; document.getElementById('modal-view').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('modal-view').classList.add('hidden'); }
     </script>
 </body>
 </html>
+
