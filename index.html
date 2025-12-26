@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSC GS MASTER PRO - ULTIMATE</title>
+    <title>SSC GS MASTER PRO - ULTIMATE EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -12,11 +12,13 @@
         body { background-color: var(--bg); color: var(--text); transition: 0.3s ease; font-family: sans-serif; overflow-x: hidden; }
         .card { background-color: var(--card); border: 1px solid rgba(0,0,0,0.05); }
         .sidebar { transition: 0.4s transform; z-index: 1000; }
+        .chapter-btn { background: var(--card); padding: 15px; margin-bottom: 10px; border-radius: 12px; border-left: 5px solid #d97706; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px; }
         .option-btn { width: 100%; text-align: left; padding: 16px; margin: 8px 0; border-radius: 12px; border: 2px solid transparent; background: rgba(0,0,0,0.03); transition: 0.2s; font-weight: 500; }
         .dark .option-btn { background: rgba(255,255,255,0.05); }
         .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
         .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
         .timer-bar { height: 4px; background: #2563eb; transition: linear; width: 100%; }
+        #art-body { line-height: 1.8; }
     </style>
 </head>
 <body class="light">
@@ -42,9 +44,9 @@
                     <p class="text-[10px] font-bold text-gray-400 mb-2">Quiz Font Size</p>
                     <input type="range" min="14" max="24" value="18" oninput="changeFontSize(this.value)" class="w-full">
                 </div>
-                <div>
-                    <p class="text-[10px] font-bold text-gray-400 mb-2">Quiz Timer (15s)</p>
-                    <input type="checkbox" id="timerToggle" checked> Enable
+                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
+                    <span>Quiz Timer (15s)</span>
+                    <input type="checkbox" id="timerToggle" checked>
                 </div>
                 <hr class="opacity-10">
                 <button onclick="adminLogin()" class="w-full text-left p-3 text-red-500 font-bold"><i class="fas fa-user-shield"></i> Admin Dashboard</button>
@@ -57,43 +59,55 @@
     <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-40">
         <div class="flex items-center gap-4">
             <button onclick="toggleSidebar()"><i class="fas fa-bars-staggered text-xl"></i></button>
-            <h1 class="font-black text-lg">SSC MASTER <span class="text-blue-200">PRO</span></h1>
+            <h1 class="font-black text-lg uppercase tracking-tight">SSC MASTER PRO</h1>
         </div>
         <button onclick="toggleLang()" id="langBtn" class="bg-white/20 px-4 py-1.5 rounded-full text-[10px] font-bold border border-white/40">HINDI</button>
     </nav>
 
-    <div id="main-app" class="max-w-xl mx-auto p-4">
+    <div id="app-content" class="max-w-xl mx-auto p-4">
         
         <div id="home-view" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div id="loading" class="col-span-full text-center py-20 opacity-50">Loading Content...</div>
+            <div id="loading" class="col-span-full text-center py-20 opacity-50">Loading Data...</div>
         </div>
 
         <div id="modal-view" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-[100]">
-            <div class="card w-full max-w-sm rounded-3xl p-8 shadow-2xl animate-bounce-in">
+            <div class="card w-full max-w-sm rounded-3xl p-8 shadow-2xl">
                 <div id="modal-content"></div>
-                <button onclick="closeModal()" class="w-full mt-6 text-gray-400 font-bold">Dismiss</button>
+                <button onclick="closeModal()" class="w-full mt-6 text-gray-400 font-bold uppercase text-xs">Close</button>
+            </div>
+        </div>
+
+        <div id="chapter-view" class="hidden">
+            <h2 id="chapter-view-title" class="text-xl font-bold mb-4 text-blue-600 border-b pb-2 uppercase"></h2>
+            <div id="chapter-list"></div>
+            <button onclick="location.reload()" class="w-full mt-6 text-gray-500 font-bold text-sm">← Back to Home</button>
+        </div>
+
+        <div id="article-view" class="hidden">
+            <div class="card p-6 rounded-2xl shadow-xl">
+                <h2 id="art-title" class="text-2xl font-bold text-blue-600 mb-4 border-b pb-2"></h2>
+                <div id="art-body" class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap text-justify text-sm"></div>
+                <button onclick="closeArticle()" class="w-full bg-gray-800 text-white p-4 rounded-xl font-bold mt-8">Back to Chapters</button>
             </div>
         </div>
 
         <div id="quiz-view" class="hidden">
-            <div id="timer-container" class="hidden w-full bg-gray-200 h-1 mb-4 rounded-full overflow-hidden">
-                <div id="timer-progress" class="timer-bar"></div>
-            </div>
+            <div id="timer-container" class="hidden w-full bg-gray-200 h-1 mb-4 rounded-full overflow-hidden"><div id="timer-progress" class="timer-bar"></div></div>
             <div id="quiz-card" class="card p-6 rounded-3xl shadow-xl min-h-[400px]">
                 <div id="quiz-content"></div>
             </div>
             <div class="flex justify-between items-center mt-6 px-2">
-                <button id="prevBtn" onclick="prevQ()" class="text-blue-600 font-bold disabled:opacity-30"><i class="fas fa-chevron-left"></i> Previous</button>
-                <button id="nextBtn" onclick="nextQ()" class="text-blue-600 font-bold">Next <i class="fas fa-chevron-right"></i></button>
+                <button id="prevBtn" onclick="prevQ()" class="text-blue-600 font-bold disabled:opacity-30"><i class="fas fa-chevron-left"></i> PREV</button>
+                <button id="nextBtn" onclick="nextQ()" class="text-blue-600 font-bold">NEXT <i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
 
-        <div id="result-view" class="hidden text-center pt-6">
+        <div id="result-view" class="hidden text-center">
             <div class="card p-10 rounded-[40px] shadow-2xl border-2 border-blue-50">
                 <h2 id="score-text" class="text-7xl font-black mb-6 text-blue-600">00</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <button onclick="location.reload()" class="bg-blue-600 text-white p-4 rounded-2xl font-bold">Home</button>
-                    <button onclick="toggleReview()" class="bg-gray-800 text-white p-4 rounded-2xl font-bold">Review</button>
+                    <button onclick="location.reload()" class="bg-blue-600 text-white p-4 rounded-2xl font-bold">HOME</button>
+                    <button onclick="toggleReview()" class="bg-gray-800 text-white p-4 rounded-2xl font-bold">REVIEW</button>
                 </div>
             </div>
             <div id="review-area" class="hidden mt-8 space-y-4 pb-20"></div>
@@ -113,47 +127,67 @@
         });
 
         function renderHome() {
-            const container = document.getElementById('home-view');
-            container.innerHTML = '';
+            const container = document.getElementById('home-view'); container.innerHTML = '';
             const cats = [...new Set(db.map(i => i.Category).filter(Boolean))];
-            
             cats.forEach(cat => {
                 const qCount = db.filter(i => i.Category === cat && i.Type === 'Quiz').length;
                 const div = document.createElement('div');
                 div.className = "card p-6 rounded-2xl shadow-sm border-b-4 border-blue-600 text-center cursor-pointer";
-                div.innerHTML = `
-                    <span class="text-2xl mb-2 block">📚</span>
-                    <h3 class="font-bold">${cat}</h3>
-                    ${isAdmin ? `<span class="text-[10px] text-red-500 font-bold">Q: ${qCount}</span>` : ''}
-                `;
-                div.onclick = () => openOptions(cat);
+                div.innerHTML = `<span class="text-2xl mb-2 block">📚</span><h3 class="font-bold">${cat}</h3>${isAdmin ? `<span class='text-[10px] text-red-500 font-bold'>Q: ${qCount}</span>` : ''}`;
+                div.onclick = () => { curCat = cat; showModeOptions(); };
                 container.appendChild(div);
             });
         }
 
-        function openOptions(cat) {
-            curCat = cat;
+        function showModeOptions() {
             showModal(`
-                <h3 class="text-2xl font-black mb-6 uppercase">${cat}</h3>
+                <h3 class="text-2xl font-black mb-6 uppercase text-center">${curCat}</h3>
                 <div class="grid gap-3">
-                    <button onclick="startMode('Article')" class="p-5 bg-amber-50 text-amber-700 rounded-2xl font-bold border border-amber-100 flex justify-between items-center">📖 Read Articles <i class="fas fa-chevron-right"></i></button>
-                    <button onclick="startQuizFlow()" class="p-5 bg-blue-50 text-blue-700 rounded-2xl font-bold border border-blue-100 flex justify-between items-center">📝 Start Quiz <i class="fas fa-chevron-right"></i></button>
+                    <button onclick="goToArticles()" class="p-5 bg-amber-50 text-amber-700 rounded-2xl font-bold flex justify-between items-center border border-amber-100">📖 Read Articles <i class="fas fa-chevron-right"></i></button>
+                    <button onclick="askQuizLimit()" class="p-5 bg-blue-50 text-blue-700 rounded-2xl font-bold flex justify-between items-center border border-blue-100">📝 Start Quiz <i class="fas fa-chevron-right"></i></button>
                 </div>
             `);
         }
 
-        function startQuizFlow() {
+        function goToArticles() {
+            closeModal();
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('chapter-view').classList.remove('hidden');
+            document.getElementById('chapter-view-title').innerText = `${curCat} Chapters`;
+            const list = document.getElementById('chapter-list'); list.innerHTML = '';
+            
+            // Sort by Order Column
+            const arts = db.filter(i => i.Category === curCat && i.Type === 'Article')
+                           .sort((a, b) => parseInt(a.Order || 0) - parseInt(b.Order || 0));
+            
+            arts.forEach(art => {
+                const d = document.createElement('div');
+                d.className = "chapter-btn";
+                d.innerHTML = `<span>${art.Order || ''}.</span> ${art.Chapter}`;
+                d.onclick = () => { openArticle(art); };
+                list.appendChild(d);
+            });
+        }
+
+        function openArticle(art) {
+            document.getElementById('chapter-view').classList.add('hidden');
+            document.getElementById('article-view').classList.remove('hidden');
+            document.getElementById('art-title').innerText = art.Chapter;
+            document.getElementById('art-body').innerText = lang === 'HI' ? art.Explanation_HI : art.Explanation_EN;
+        }
+
+        function askQuizLimit() {
             showModal(`
-                <h3 class="font-bold mb-4">Select Question Limit</h3>
+                <h3 class="font-bold mb-4 text-center">Question Limit</h3>
                 <div class="grid grid-cols-3 gap-2">
-                    <button onclick="runQuiz(10)" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg font-bold">10</button>
-                    <button onclick="runQuiz(20)" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg font-bold">20</button>
-                    <button onclick="runQuiz(999)" class="bg-blue-600 text-white p-3 rounded-lg font-bold">ALL</button>
+                    <button onclick="startQuiz(10)" class="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl font-bold">10</button>
+                    <button onclick="startQuiz(20)" class="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl font-bold">20</button>
+                    <button onclick="startQuiz(999)" class="bg-blue-600 text-white p-4 rounded-xl font-bold">ALL</button>
                 </div>
             `);
         }
 
-        function runQuiz(limit) {
+        function startQuiz(limit) {
             closeModal();
             const pool = db.filter(i => i.Category === curCat && i.Type === 'Quiz');
             activeData = pool.sort(() => 0.5 - Math.random()).slice(0, limit);
@@ -167,16 +201,14 @@
             stopTimer();
             const q = activeData[curIdx];
             const isHI = (lang === 'HI');
-            const question = isHI ? q.Question_HI : q.Question_EN;
             const correct = isHI ? q.Correct_HI : q.Correct_EN;
             const opts = isHI ? [q.Opt1_HI, q.Opt2_HI, q.Opt3_HI, q.Opt4_HI] : [q.Opt1_EN, q.Opt2_EN, q.Opt3_EN, q.Opt4_EN];
             const ans = userChoices[curIdx];
 
             document.getElementById('prevBtn').disabled = (curIdx === 0);
-            const container = document.getElementById('quiz-content');
-            container.innerHTML = `
+            document.getElementById('quiz-content').innerHTML = `
                 <div class="flex justify-between mb-4"><span class="text-[10px] font-bold text-blue-500 uppercase">${curCat}</span><span class="text-[10px] opacity-50">${curIdx+1}/${activeData.length}</span></div>
-                <h2 style="font-size: ${fs}px" class="font-bold mb-8 leading-snug">${question}</h2>
+                <h2 style="font-size: ${fs}px" class="font-bold mb-8 leading-tight">${isHI ? q.Question_HI : q.Question_EN}</h2>
                 <div class="space-y-2">
                     ${opts.map(o => {
                         let cls = "";
@@ -184,14 +216,14 @@
                             if(o === correct) cls = "correct";
                             else if(o === ans.selected) cls = "wrong";
                         }
-                        return `<button class="option-btn ${cls}" onclick="selectAns('${o}','${correct}','${isHI?q.Explanation_HI:q.Explanation_EN}')">${o}</button>`;
+                        return `<button class="option-btn ${cls}" onclick="handleChoice('${o}','${correct}','${isHI?q.Explanation_HI:q.Explanation_EN}')">${o}</button>`;
                     }).join('')}
                 </div>
             `;
             if(document.getElementById('timerToggle').checked && !ans) startTimer();
         }
 
-        function selectAns(sel, cor, exp) {
+        function handleChoice(sel, cor, exp) {
             if(userChoices[curIdx]) return;
             stopTimer();
             const isRight = (sel === cor);
@@ -212,12 +244,8 @@
             timerRef = setTimeout(() => { nextQ(); }, 15000);
         }
 
-        function stopTimer() { clearInterval(timerRef); document.getElementById('timer-container').classList.add('hidden'); }
-
-        function nextQ() { 
-            if(curIdx < activeData.length - 1) { curIdx++; renderQuestion(); } 
-            else finishQuiz(); 
-        }
+        function stopTimer() { clearTimeout(timerRef); document.getElementById('timer-container').classList.add('hidden'); }
+        function nextQ() { if(curIdx < activeData.length-1) { curIdx++; renderQuestion(); } else finishQuiz(); }
         function prevQ() { if(curIdx > 0) { curIdx--; renderQuestion(); } }
 
         function finishQuiz() {
@@ -228,48 +256,25 @@
         }
 
         function toggleReview() {
-            const area = document.getElementById('review-area');
-            area.classList.toggle('hidden');
+            const area = document.getElementById('review-area'); area.classList.toggle('hidden');
             area.innerHTML = userChoices.map((a, i) => `
                 <div class="card p-5 rounded-2xl border-l-4 ${a?.isRight ? 'border-green-500' : 'border-red-500'}">
                     <p class="font-bold text-sm mb-2">${lang==='HI' ? activeData[i].Question_HI : activeData[i].Question_EN}</p>
-                    <p class="text-xs text-green-600 font-bold">Answer: ${a?.correct || 'N/A'}</p>
+                    <p class="text-xs text-green-600 font-bold">Sahi Jawab: ${a?.correct || 'N/A'}</p>
                     <div class="mt-2 text-[11px] italic opacity-70">${a?.explanation || ''}</div>
                 </div>
             `).join('');
         }
 
-        // Article Mode
-        function startMode(mode) {
-            if(mode === 'Article') {
-                const arts = db.filter(i => i.Category === curCat && i.Type === 'Article');
-                showModal(`
-                    <h3 class="font-bold mb-4 uppercase">Chapters</h3>
-                    <div class="grid gap-2">
-                        ${arts.map(a => `<button onclick="showArtContent('${a.Chapter}')" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl font-bold text-left">${a.Chapter}</button>`).join('')}
-                    </div>
-                `);
-            }
-        }
-
-        function showArtContent(chap) {
-            closeModal();
-            const art = db.find(i => i.Category === curCat && i.Chapter === chap && i.Type === 'Article');
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('result-view').classList.remove('hidden'); // Reuse review area container
-            document.getElementById('score-text').innerText = chap;
-            document.getElementById('review-area').classList.remove('hidden');
-            document.getElementById('review-area').innerHTML = `<div class="card p-6 rounded-2xl leading-relaxed text-justify">${lang==='HI' ? art.Explanation_HI : art.Explanation_EN}</div><button onclick="location.reload()" class="w-full bg-gray-800 text-white p-4 rounded-xl mt-4">Close</button>`;
-        }
-
-        // Global UI
+        // Global UI Logic
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('overlay').classList.toggle('hidden'); }
         function toggleDarkMode() { document.body.classList.toggle('dark'); toggleSidebar(); }
         function changeFontSize(v) { fs = v; if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); }
-        function toggleLang() { lang = (lang==='HI'?'EN':'HI'); document.getElementById('langBtn').innerText=lang; if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); }
-        function adminLogin() { if(prompt("Pass?")==="1234") { isAdmin=true; renderHome(); alert("Admin Mode Active!"); } toggleSidebar(); }
+        function toggleLang() { lang = (lang === 'HI' ? 'EN' : 'HI'); document.getElementById('langBtn').innerText = lang; if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); }
+        function adminLogin() { if(prompt("Password?") === "1234") { isAdmin = true; renderHome(); alert("Admin Mode On"); } toggleSidebar(); }
         function showModal(html) { document.getElementById('modal-content').innerHTML = html; document.getElementById('modal-view').classList.remove('hidden'); }
         function closeModal() { document.getElementById('modal-view').classList.add('hidden'); }
+        function closeArticle() { document.getElementById('article-view').classList.add('hidden'); document.getElementById('chapter-view').classList.remove('hidden'); }
     </script>
 </body>
 </html>
