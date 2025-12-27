@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSC GS MASTER PRO - COMPLETE VERSION</title>
+    <title>SSC GS MASTER PRO - FINAL FIX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -12,13 +12,13 @@
         body { background-color: var(--bg); color: var(--text); transition: 0.3s ease; font-family: sans-serif; overflow-x: hidden; }
         .card { background-color: var(--card); border: 1px solid rgba(0,0,0,0.05); }
         .sidebar { transition: 0.4s transform; z-index: 1000; }
-        .chapter-btn { background: var(--card); padding: 15px; margin-bottom: 10px; border-radius: 12px; border-left: 5px solid #d97706; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px; }
-        .option-btn { width: 100%; text-align: left; padding: 16px; margin: 8px 0; border-radius: 12px; border: 2px solid transparent; background: rgba(0,0,0,0.03); transition: 0.2s; font-weight: 500; }
-        .dark .option-btn { background: rgba(255,255,255,0.05); }
+        .option-btn { width: 100%; text-align: left; padding: 15px; margin: 8px 0; border-radius: 12px; border: 2px solid #e2e8f0; background: var(--card); transition: 0.2s; font-weight: 500; }
+        .dark .option-btn { border-color: #334155; }
         .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
         .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
-        .timer-bar { height: 4px; background: #2563eb; transition: linear; width: 100%; }
-        #art-body { line-height: 1.8; }
+        .explanation-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; margin-top: 15px; border-radius: 10px; font-size: 14px; animation: slideIn 0.3s ease; }
+        .dark .explanation-box { background: #1e293b; color: #cbd5e1; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="light">
@@ -28,28 +28,19 @@
 
     <div id="sidebar" class="sidebar fixed top-0 left-0 w-72 h-full card shadow-2xl -translate-x-full">
         <div class="p-6">
-            <h2 class="text-xl font-black text-blue-600 mb-8 tracking-tighter">APP SETTINGS</h2>
+            <h2 class="text-xl font-black text-blue-600 mb-8 tracking-tighter">SETTINGS</h2>
             <div class="space-y-6">
                 <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
                     <span>Dark Mode</span> <i id="theme-icon" class="fas fa-moon"></i>
                 </button>
                 <div class="flex items-center justify-between p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
-                    <span>App Sounds</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="soundToggle" class="sr-only peer" checked>
-                        <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                    </label>
+                    <span>Sounds</span>
+                    <input type="checkbox" id="soundToggle" checked>
                 </div>
                 <div>
-                    <p class="text-[10px] font-bold text-gray-400 mb-2">Quiz Font Size</p>
-                    <input type="range" min="14" max="24" value="18" oninput="changeFontSize(this.value)" class="w-full">
+                    <p class="text-[10px] font-bold text-gray-400 mb-2">Font Size</p>
+                    <input type="range" min="14" max="24" value="16" oninput="changeFontSize(this.value)" class="w-full">
                 </div>
-                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
-                    <span>Quiz Timer (15s)</span>
-                    <input type="checkbox" id="timerToggle" checked>
-                </div>
-                <hr class="opacity-10">
-                <button onclick="adminLogin()" class="w-full text-left p-3 text-red-500 font-bold"><i class="fas fa-user-shield"></i> Admin Statistics</button>
                 <button onclick="location.reload()" class="w-full text-left p-3 font-bold"><i class="fas fa-home"></i> Home Screen</button>
             </div>
         </div>
@@ -58,66 +49,60 @@
 
     <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-40">
         <div class="flex items-center gap-4">
-            <button onclick="toggleSidebar()"><i class="fas fa-bars-staggered text-xl"></i></button>
-            <h1 class="font-black text-lg">SSC MASTER PRO</h1>
+            <button onclick="toggleSidebar()"><i class="fas fa-bars-staggered"></i></button>
+            <h1 class="font-bold">SSC MASTER</h1>
         </div>
-        <button onclick="toggleLang()" id="langBtn" class="bg-white/20 px-4 py-1.5 rounded-full text-[10px] font-bold border border-white/40">HINDI</button>
+        <button onclick="toggleLang()" id="langBtn" class="bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase">HI</button>
     </nav>
 
     <div id="main-app" class="max-w-xl mx-auto p-4">
         
-        <div id="home-view" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div id="loading" class="col-span-full text-center py-20 opacity-50">Syncing Data...</div>
-        </div>
-
-        <div id="modal-view" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-[100]">
-            <div class="card w-full max-w-sm rounded-3xl p-8 shadow-2xl">
-                <div id="modal-content"></div>
-                <button onclick="closeModal()" class="w-full mt-6 text-gray-400 font-bold uppercase text-xs">Dismiss</button>
-            </div>
+        <div id="home-view" class="grid grid-cols-2 gap-4">
+            <div id="loading" class="col-span-full text-center py-20 text-gray-400">Loading Data...</div>
         </div>
 
         <div id="chapter-view" class="hidden">
-            <h2 id="chap-title" class="text-xl font-bold mb-4 text-blue-600 border-b pb-2 uppercase">Chapters</h2>
-            <div id="chapter-list"></div>
+            <h2 id="chap-title" class="text-lg font-bold mb-4 text-blue-600 border-b pb-2"></h2>
+            <div id="chapter-list" class="space-y-3"></div>
             <button onclick="location.reload()" class="w-full mt-6 text-gray-400 font-bold">← Back</button>
         </div>
 
         <div id="article-view" class="hidden">
-            <div class="card p-6 rounded-2xl shadow-xl">
-                <h2 id="art-title" class="text-2xl font-bold text-blue-600 mb-4 border-b pb-2 underline"></h2>
-                <div id="art-body" class="whitespace-pre-wrap text-justify text-sm"></div>
-                <button onclick="closeArticle()" class="w-full bg-gray-800 text-white p-4 rounded-xl font-bold mt-8">Back to Chapters</button>
+            <div class="card p-6 rounded-2xl">
+                <h2 id="art-title" class="text-xl font-bold text-blue-600 mb-4 border-b pb-2"></h2>
+                <div id="art-body" class="text-sm leading-relaxed whitespace-pre-wrap"></div>
+                <button onclick="closeArticle()" class="w-full bg-blue-600 text-white p-4 rounded-xl mt-8 font-bold">Back to Chapters</button>
             </div>
         </div>
 
         <div id="quiz-view" class="hidden">
-            <div id="timer-container" class="hidden w-full bg-gray-200 h-1 mb-4 rounded-full overflow-hidden"><div id="timer-progress" class="timer-bar"></div></div>
-            <div id="quiz-card" class="card p-6 rounded-3xl shadow-xl min-h-[400px]">
+            <div class="flex justify-between mb-2 px-2"><span id="quiz-progress" class="text-xs font-bold opacity-50"></span></div>
+            <div class="card p-6 rounded-3xl shadow-xl min-h-[350px]">
                 <div id="quiz-content"></div>
+                <div id="feedback-area" class="hidden"></div>
             </div>
-            <div class="flex justify-between items-center mt-6 px-2">
-                <button id="prevBtn" onclick="prevQ()" class="text-blue-600 font-bold disabled:opacity-30"><i class="fas fa-chevron-left"></i> Previous</button>
-                <button id="nextBtn" onclick="nextQ()" class="text-blue-600 font-bold">Next <i class="fas fa-chevron-right"></i></button>
+            <div class="flex gap-4 mt-6">
+                <button id="prevBtn" onclick="prevQ()" class="flex-1 bg-gray-200 p-4 rounded-xl font-bold opacity-30" disabled>Prev</button>
+                <button id="nextBtn" onclick="nextQ()" class="flex-1 bg-blue-600 text-white p-4 rounded-xl font-bold">Next</button>
             </div>
         </div>
 
-        <div id="result-view" class="hidden">
-            <div class="card p-10 rounded-[40px] text-center shadow-2xl">
-                <h2 id="score-text" class="text-7xl font-black mb-6 text-blue-600">00</h2>
+        <div id="result-view" class="hidden text-center">
+            <div class="card p-10 rounded-[40px] shadow-2xl">
+                <h2 class="text-gray-400 font-bold uppercase text-xs mb-2">Your Score</h2>
+                <div id="final-score" class="text-6xl font-black text-blue-600 mb-6">0/0</div>
                 <div class="grid grid-cols-2 gap-4">
-                    <button onclick="location.reload()" class="bg-blue-600 text-white p-4 rounded-2xl font-bold">New Task</button>
-                    <button onclick="toggleReview()" class="bg-gray-800 text-white p-4 rounded-2xl font-bold">Review</button>
+                    <button onclick="location.reload()" class="bg-blue-600 text-white p-4 rounded-2xl font-bold text-sm">Restart</button>
+                    <button onclick="toggleReview()" class="bg-gray-800 text-white p-4 rounded-2xl font-bold text-sm">Review</button>
                 </div>
             </div>
-            <div id="review-area" class="hidden mt-8 space-y-4 pb-20"></div>
+            <div id="review-area" class="hidden mt-6 space-y-4 text-left pb-20"></div>
         </div>
     </div>
 
     <script>
         const API = 'https://opensheet.elk.sh/1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs/Sheet1';
-        let db = [], curCat = '', curIdx = 0, lang = 'HI', isAdmin = false, fs = 18, timerRef = null;
-        let activeData = [], userChoices = [], lastArt = null;
+        let db = [], curCat = '', activeData = [], userChoices = [], curIdx = 0, lang = 'HI', fs = 16;
 
         fetch(API).then(r => r.json()).then(data => {
             db = data;
@@ -129,160 +114,127 @@
             const container = document.getElementById('home-view'); container.innerHTML = '';
             const cats = [...new Set(db.map(i => i.Category).filter(Boolean))];
             cats.forEach(cat => {
-                const qCount = db.filter(i => i.Category === cat && i.Type === 'Quiz').length;
                 const div = document.createElement('div');
-                div.className = "card p-6 rounded-2xl shadow-sm border-b-4 border-blue-600 text-center cursor-pointer hover:shadow-lg transition";
-                div.innerHTML = `<span class="text-2xl mb-2 block">📚</span><h3 class="font-bold">${cat}</h3>${isAdmin ? `<span class='text-[10px] text-red-500 font-bold'>Questions: ${qCount}</span>` : ''}`;
-                div.onclick = () => { curCat = cat; showOptions(); };
+                div.className = "card p-6 rounded-2xl text-center cursor-pointer hover:shadow-md transition border-b-4 border-blue-600";
+                div.innerHTML = `<h3 class="font-bold text-sm">${cat}</h3>`;
+                div.onclick = () => { curCat = cat; showSelection(); };
                 container.appendChild(div);
             });
         }
 
-        function showOptions() {
-            showModal(`
-                <h3 class="text-2xl font-black mb-6 text-center uppercase">${curCat}</h3>
-                <div class="grid gap-3">
-                    <button onclick="openChapterList()" class="p-5 bg-amber-50 text-amber-700 rounded-2xl font-bold flex justify-between items-center border border-amber-100">📖 Read Articles <i class="fas fa-chevron-right"></i></button>
-                    <button onclick="askLimit()" class="p-5 bg-blue-50 text-blue-700 rounded-2xl font-bold flex justify-between items-center border border-blue-100">📝 Start Quiz <i class="fas fa-chevron-right"></i></button>
-                </div>
-            `);
+        function showSelection() {
+            if(confirm(`Read Article for ${curCat}? (Cancel for Quiz)`)) openChapterList();
+            else startQuiz();
         }
 
         function openChapterList() {
-            closeModal();
             document.getElementById('home-view').classList.add('hidden');
             document.getElementById('chapter-view').classList.remove('hidden');
-            document.getElementById('chap-title').innerText = `${curCat} Chapters`;
+            document.getElementById('chap-title').innerText = curCat;
             const list = document.getElementById('chapter-list'); list.innerHTML = '';
-            
-            const arts = db.filter(i => i.Category === curCat && i.Type === 'Article')
-                           .sort((a, b) => parseInt(a.Order || 0) - parseInt(b.Order || 0));
-            
+            const arts = db.filter(i => i.Category === curCat && i.Type === 'Article').sort((a,b)=>a.Order-b.Order);
             arts.forEach(art => {
                 const d = document.createElement('div');
-                d.className = "chapter-btn";
-                d.innerHTML = `<span>${art.Order || '•'}.</span> ${art.Chapter}`;
-                d.onclick = () => { openArticle(art); };
+                d.className = "card p-4 rounded-xl flex justify-between items-center font-bold cursor-pointer";
+                d.innerHTML = `<span>${art.Order}. ${art.Chapter}</span> <i class="fas fa-chevron-right opacity-20"></i>`;
+                d.onclick = () => openArticle(art);
                 list.appendChild(d);
             });
         }
 
         function openArticle(art) {
-            lastArt = art;
             document.getElementById('chapter-view').classList.add('hidden');
             document.getElementById('article-view').classList.remove('hidden');
             document.getElementById('art-title').innerText = art.Chapter;
-            
-            // Bilingual logic for Article
-            const content = (lang === 'HI') ? art.Explanation_HI : (art.Explanation_EN || art.Explanation_HI);
-            document.getElementById('art-body').innerText = content;
+            document.getElementById('art-body').innerText = (lang==='HI' ? art.Explanation_HI : art.Explanation_EN || art.Explanation_HI);
         }
 
-        function askLimit() {
-            showModal(`
-                <h3 class="font-bold mb-4 text-center">Set Questions</h3>
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="startQuiz(10)" class="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl font-bold">10</button>
-                    <button onclick="startQuiz(20)" class="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl font-bold">20</button>
-                    <button onclick="startQuiz(999)" class="bg-blue-600 text-white p-4 rounded-xl font-bold">ALL</button>
-                </div>
-            `);
-        }
-
-        function startQuiz(limit) {
-            closeModal();
-            const pool = db.filter(i => i.Category === curCat && i.Type === 'Quiz');
-            activeData = pool.sort(() => 0.5 - Math.random()).slice(0, limit);
-            curIdx = 0; userChoices = new Array(activeData.length).fill(null);
+        function startQuiz() {
+            activeData = db.filter(i => i.Category === curCat && i.Type === 'Quiz').sort(()=>0.5-Math.random()).slice(0, 10);
+            userChoices = new Array(activeData.length).fill(null);
+            curIdx = 0;
             document.getElementById('home-view').classList.add('hidden');
             document.getElementById('quiz-view').classList.remove('hidden');
             renderQuestion();
         }
 
         function renderQuestion() {
-            stopTimer();
             const q = activeData[curIdx];
-            const isHI = (lang === 'HI');
-            const correct = isHI ? q.Correct_HI : (q.Correct_EN || q.Correct_HI);
+            const isHI = lang === 'HI';
+            const cor = isHI ? q.Correct_HI : q.Correct_EN || q.Correct_HI;
             const opts = isHI ? [q.Opt1_HI, q.Opt2_HI, q.Opt3_HI, q.Opt4_HI] : [q.Opt1_EN, q.Opt2_EN, q.Opt3_EN, q.Opt4_EN];
             const ans = userChoices[curIdx];
 
-            document.getElementById('prevBtn').disabled = (curIdx === 0);
+            document.getElementById('quiz-progress').innerText = `Progress: ${curIdx+1}/${activeData.length}`;
             document.getElementById('quiz-content').innerHTML = `
-                <div class="flex justify-between mb-4"><span class="text-[10px] font-bold text-blue-500 uppercase">${curCat}</span><span class="text-[10px] opacity-50">${curIdx+1}/${activeData.length}</span></div>
-                <h2 style="font-size: ${fs}px" class="font-bold mb-8 leading-tight">${isHI ? q.Question_HI : (q.Question_EN || q.Question_HI)}</h2>
+                <h2 style="font-size:${fs}px" class="font-bold mb-6">${isHI ? q.Question_HI : q.Question_EN}</h2>
                 <div class="space-y-2">
                     ${opts.map(o => {
                         let cls = "";
                         if(ans) {
-                            if(o === correct) cls = "correct";
-                            else if(o === ans.selected) cls = "wrong";
+                            if(o === cor) cls = "correct";
+                            else if(o === ans.sel) cls = "wrong";
                         }
-                        return `<button class="option-btn ${cls}" onclick="handleChoice('${o}','${correct}','${isHI?q.Explanation_HI:(q.Explanation_EN||q.Explanation_HI)}')">${o}</button>`;
+                        return `<button class="option-btn ${cls}" onclick="check('${o}','${cor}','${isHI?q.Explanation_HI:q.Explanation_EN}','${q.Tag}')">${o}</button>`;
                     }).join('')}
                 </div>
             `;
-            if(document.getElementById('timerToggle').checked && !ans) startTimer();
+            const fb = document.getElementById('feedback-area');
+            if(ans) {
+                fb.innerHTML = `<div class="explanation-box"><b>Explanation:</b><br>${ans.exp}<br><span class="text-[10px] font-bold text-blue-500 mt-2 block">${ans.tag || ''}</span></div>`;
+                fb.classList.remove('hidden');
+            } else fb.classList.add('hidden');
+
+            document.getElementById('prevBtn').disabled = (curIdx === 0);
+            document.getElementById('prevBtn').style.opacity = (curIdx === 0) ? 0.3 : 1;
         }
 
-        function handleChoice(sel, cor, exp) {
+        function check(sel, cor, exp, tag) {
             if(userChoices[curIdx]) return;
-            stopTimer();
-            const isRight = (sel === cor);
-            userChoices[curIdx] = { selected: sel, correct: cor, explanation: exp, isRight: isRight };
-            
+            const right = (sel === cor);
+            userChoices[curIdx] = { sel, cor, exp, tag, isRight: right };
             if(document.getElementById('soundToggle').checked) {
-                const aud = document.getElementById(isRight ? 'sound-correct' : 'sound-wrong');
-                aud.currentTime = 0; aud.play();
+                const s = document.getElementById(right ? 'sound-correct' : 'sound-wrong');
+                s.currentTime = 0; s.play();
             }
             renderQuestion();
         }
 
-        function startTimer() {
-            const bar = document.getElementById('timer-progress');
-            document.getElementById('timer-container').classList.remove('hidden');
-            bar.style.width = '100%'; bar.style.transition = 'none';
-            setTimeout(() => { bar.style.transition = 'width 15s linear'; bar.style.width = '0%'; }, 10);
-            timerRef = setTimeout(() => { nextQ(); }, 15000);
-        }
-
-        function stopTimer() { clearTimeout(timerRef); document.getElementById('timer-container').classList.add('hidden'); }
-        function nextQ() { if(curIdx < activeData.length-1) { curIdx++; renderQuestion(); } else finishQuiz(); }
+        function nextQ() { curIdx < activeData.length - 1 ? (curIdx++, renderQuestion()) : finish(); }
         function prevQ() { if(curIdx > 0) { curIdx--; renderQuestion(); } }
 
-        function finishQuiz() {
+        function finish() {
             document.getElementById('quiz-view').classList.add('hidden');
             document.getElementById('result-view').classList.remove('hidden');
-            const score = userChoices.filter(a => a?.isRight).length;
-            document.getElementById('score-text').innerText = score.toString().padStart(2, '0');
+            const score = userChoices.filter(u => u?.isRight).length;
+            document.getElementById('final-score').innerText = `${score}/${activeData.length}`;
         }
 
         function toggleReview() {
             const area = document.getElementById('review-area'); area.classList.toggle('hidden');
-            area.innerHTML = userChoices.map((a, i) => `
-                <div class="card p-5 rounded-2xl border-l-4 ${a?.isRight ? 'border-green-500' : 'border-red-500'}">
-                    <p class="font-bold text-sm mb-2">${lang==='HI' ? activeData[i].Question_HI : (activeData[i].Question_EN || activeData[i].Question_HI)}</p>
-                    <p class="text-xs text-green-600 font-bold">Correct: ${a?.correct || 'N/A'}</p>
-                    <div class="mt-2 text-[11px] italic opacity-70">${a?.explanation || ''}</div>
+            area.innerHTML = userChoices.map((u, i) => `
+                <div class="card p-4 rounded-xl border-l-4 ${u?.isRight ? 'border-green-500' : 'border-red-500'}">
+                    <p class="font-bold text-sm">${lang==='HI' ? activeData[i].Question_HI : activeData[i].Question_EN}</p>
+                    <p class="text-xs text-green-600 mt-1">Ans: ${u?.cor}</p>
                 </div>
             `).join('');
         }
 
         function toggleLang() { 
             lang = (lang === 'HI' ? 'EN' : 'HI'); 
-            document.getElementById('langBtn').innerText = lang; 
-            if(!document.getElementById('article-view').classList.contains('hidden')) openArticle(lastArt);
-            if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); 
+            document.getElementById('langBtn').innerText = lang;
+            if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion();
+            if(!document.getElementById('article-view').classList.contains('hidden')) {
+                const title = document.getElementById('art-title').innerText;
+                const art = db.find(i => i.Chapter === title);
+                openArticle(art);
+            }
         }
 
-        function toggleDarkMode() { document.body.classList.toggle('dark'); toggleSidebar(); }
+        function toggleDarkMode() { document.body.classList.toggle('dark'); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('overlay').classList.toggle('hidden'); }
         function changeFontSize(v) { fs = v; if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); }
-        function adminLogin() { if(prompt("Password?") === "1234") { isAdmin = true; renderHome(); alert("Admin Mode On"); } toggleSidebar(); }
-        function showModal(html) { document.getElementById('modal-content').innerHTML = html; document.getElementById('modal-view').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('modal-view').classList.add('hidden'); }
         function closeArticle() { document.getElementById('article-view').classList.add('hidden'); document.getElementById('chapter-view').classList.remove('hidden'); }
     </script>
 </body>
 </html>
-
