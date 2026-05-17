@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSC GS MASTER PRO - TESTBOOK EDITION</title>
+    <title>VISION SSC GS MASTER PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -29,7 +29,6 @@
     <audio id="sound-correct" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
     <audio id="sound-wrong" src="https://assets.mixkit.co/active_storage/sfx/2105/2105-preview.mp3"></audio>
 
-    <!-- Sidebar Configuration -->
     <div id="sidebar" class="sidebar fixed top-0 left-0 w-72 h-full card shadow-2xl -translate-x-full">
         <div class="p-6 h-full flex flex-col justify-between">
             <div class="space-y-6">
@@ -51,51 +50,44 @@
     </div>
     <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden z-50"></div>
 
-    <!-- Navigation Header -->
     <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-40">
         <div class="flex items-center gap-4">
             <button onclick="toggleSidebar()"><i class="fas fa-bars-staggered"></i></button>
-            <h1 class="font-bold tracking-tight">SSC MASTER PRO</h1>
+            <h1 class="font-bold tracking-tight">VISION SSC GS PRO</h1>
         </div>
         <button onclick="toggleLang()" id="langBtn" class="bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase">HI</button>
     </nav>
 
-    <!-- Main Workspace -->
     <div id="main-app" class="max-w-xl mx-auto p-4">
         
-        <!-- Welcome Banner & Premium Option A Home View -->
         <div id="home-view" class="space-y-6">
             <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-3xl text-white shadow-xl">
                 <h2 class="text-xl font-black mb-1" id="welcome-title">नमस्ते, तैयारी शुरू करें!</h2>
-                <p class="text-xs text-blue-100" id="welcome-sub">Testbook pattern par aadharit live test series</p>
+                <p class="text-xs text-blue-100" id="welcome-sub">Vision Coaching Classes - Safalta Ki Nayi Udaan</p>
             </div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 px-1" id="section-title">Exam Categories</h3>
-            <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div id="loading" class="col-span-full text-center py-20 text-gray-400">Syncing Live Data...</div>
+            <div id="categories-grid" class="grid grid-cols-1 gap-4">
+                <div id="loading" class="text-center py-20 text-gray-400">Syncing Live Data...</div>
             </div>
         </div>
 
-        <!-- Modern Chapter Lists View -->
         <div id="chapter-view" class="hidden">
             <h2 id="chap-title" class="text-lg font-bold mb-4 text-blue-600 border-b pb-2">Chapters</h2>
             <div id="chapter-list" class="space-y-3"></div>
             <button onclick="navigateHome()" class="w-full mt-6 text-gray-400 font-bold text-sm">← Back to Dashboard</button>
         </div>
 
-        <!-- Premium Article Reader Mode -->
         <div id="article-view" class="hidden">
             <div class="card p-6 rounded-2xl shadow-xl">
                 <h2 id="art-title" class="text-xl font-bold text-blue-600 mb-4 border-b pb-2"></h2>
-                <div id="art-body" class="text-sm leading-relaxed whitespace-pre-wrap font-normal"></div>
+                <div id="art-body" class="text-sm leading-relaxed whitespace-pre-wrap font-normal text-gray-700 dark:text-gray-300"></div>
                 <button onclick="backToChapters()" class="w-full bg-blue-600 text-white p-4 rounded-xl mt-8 font-bold">Back to Chapters</button>
             </div>
         </div>
 
-        <!-- Immersive Quiz Platform -->
         <div id="quiz-view" class="hidden">
             <div class="flex justify-between items-center mb-2 px-2">
                 <span id="quiz-progress" class="text-xs font-bold opacity-50"></span>
-                <!-- Advance Feature: Timer Badge -->
                 <div id="timer-badge" class="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-full">
                     <i class="fas fa-clock"></i> <span id="timer-text">30s</span>
                 </div>
@@ -111,7 +103,6 @@
             </div>
         </div>
 
-        <!-- Detailed Result Screen -->
         <div id="result-view" class="hidden text-center">
             <div class="card p-10 rounded-[40px] shadow-2xl">
                 <h2 class="text-gray-400 font-bold uppercase text-xs mb-2">Final Score</h2>
@@ -125,7 +116,6 @@
         </div>
     </div>
 
-    <!-- Mode Selection Modal -->
     <div id="selection-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-[100] backdrop-blur-sm">
         <div class="card w-full max-w-sm rounded-[32px] p-8 shadow-2xl text-center relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400"><i class="fas fa-times"></i></button>
@@ -134,6 +124,18 @@
             </div>
             <h3 id="modal-cat-name" class="text-xl font-bold mb-1">Category</h3>
             <p class="text-gray-400 text-xs mb-6">Choose your learning mode</p>
+            
+            <div id="quiz-config-panel" class="mb-4 p-3 bg-gray-50 dark:bg-gray-800/60 rounded-xl text-left hidden">
+                <label id="config-label" class="block text-xs font-bold text-gray-500 mb-1.5 uppercase">Question Count Pattern:</label>
+                <select id="quizQuestionCount" class="w-full p-2.5 rounded-lg border bg-white dark:bg-gray-900 text-sm font-semibold outline-none border-gray-200 dark:border-gray-700">
+                    <option value="25">SSC Official GS Pattern (25 Qs)</option>
+                    <option value="5">Quick Practice (5 Qs)</option>
+                    <option value="10" selected>Standard Set (10 Qs)</option>
+                    <option value="15">Medium Sprint (15 Qs)</option>
+                    <option value="20">Mega Drill (20 Qs)</option>
+                </select>
+            </div>
+
             <div class="grid gap-3">
                 <button onclick="openChapterList()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold flex justify-between items-center px-5">
                     <span id="modal-read-btn">📖 Read Article</span> <i class="fas fa-chevron-right text-[10px]"></i>
@@ -149,12 +151,11 @@
         const API = 'https://opensheet.elk.sh/1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs/Sheet1';
         let db = [], curCat = '', activeData = [], userChoices = [], curIdx = 0, lang = 'HI', fs = 16;
         let timerInterval, timeLeft = 30;
+        let currentOpenArticleData = null; // Track dynamic reader updates
 
-        // 🛠️ CRITICAL FIX: System Navigation History Engine
         window.addEventListener('popstate', function (event) {
             if (event.state) {
-                const targetView = event.state.view;
-                showViewDirectly(targetView);
+                showViewDirectly(event.state.view);
             } else {
                 showViewDirectly('home-view');
             }
@@ -170,6 +171,7 @@
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(viewId).classList.remove('hidden');
+            if(viewId !== 'article-view') currentOpenArticleData = null;
         }
 
         fetch(API).then(r => r.json()).then(data => {
@@ -178,34 +180,45 @@
             renderHome();
         });
 
-        // Mapping English Categories to Hindi Translations Dynamically
         const categoryTranslation = {
             "History": "इतिहास (History)",
             "Geography": "भूगोल (Geography)",
             "Polity": "भारतीय संविधान (Polity)",
             "Science": "सामान्य विज्ञान (Science)",
+            "Physics": "भौतिक विज्ञान (Physics)",
+            "Chemistry": "रसायन विज्ञान (Chemistry)",
+            "Biology": "जीव विज्ञान (Biology)",
             "Economics": "अर्थशास्त्र (Economics)",
             "Static GK": "विविध सामान्य ज्ञान (Static GK)"
         };
 
+        // UI Fixed: Category wise beautiful iconic maps to fill the white blank boxes
+        function getCategoryIcon(cat) {
+            const raw = cat.toLowerCase();
+            if(raw.includes('history') || raw.includes('इतिहास')) return 'fa-monument text-amber-500';
+            if(raw.includes('geo') || raw.includes('भूगोल')) return 'fa-earth-americas text-emerald-500';
+            if(raw.includes('polity') || raw.includes('संविधान')) return 'fa-gavel text-indigo-500';
+            if(raw.includes('physics') || raw.includes('chemistry') || raw.includes('biology') || raw.includes('science') || raw.includes('विज्ञान')) return 'fa-flask text-purple-500';
+            if(raw.includes('eco') || raw.includes('अर्थशास्त्र')) return 'fa-chart-line text-blue-500';
+            return 'fa-layer-group text-blue-600';
+        }
+
         function renderHome() {
             const container = document.getElementById('categories-grid'); container.innerHTML = '';
             
-            // Translations for Welcome Panel
             document.getElementById('welcome-title').innerText = lang === 'HI' ? "नमस्ते, तैयारी शुरू करें!" : "Welcome, Start Learning!";
-            document.getElementById('welcome-sub').innerText = lang === 'HI' ? "टेस्टबुक पैटर्न पर आधारित लाइव टेस्ट सीरीज" : "Live test series based on Testbook pattern";
+            document.getElementById('welcome-sub').innerText = lang === 'HI' ? "Vision Coaching Classes - Safalta Ki Nayi Udaan" : "Vision Coaching Classes - Your Gateway to Competitive Excellence";
             document.getElementById('section-title').innerText = lang === 'HI' ? "परीक्षा श्रेणियां" : "Exam Categories";
 
             const cats = [...new Set(db.map(i => i.Category).filter(Boolean))];
             cats.forEach(cat => {
                 const displayName = lang === 'HI' ? (categoryTranslation[cat] || cat) : cat;
                 const div = document.createElement('div');
-                // Option A Layout: Grid profile blocks with beautiful alignment
                 div.className = "card p-5 rounded-2xl flex items-center justify-between cursor-pointer hover:scale-[0.99] transition border-b-4 border-blue-600 shadow-sm";
                 div.innerHTML = `
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-blue-50 dark:bg-gray-800 rounded-xl flex items-center justify-center text-blue-600">
-                            <i class="fas fa-book-bookmark"></i>
+                        <div class="w-11 h-11 bg-blue-50 dark:bg-gray-800 rounded-xl flex items-center justify-center">
+                            <i class="fas ${getCategoryIcon(cat)} text-base"></i>
                         </div>
                         <h3 class="font-extrabold text-sm tracking-tight">${displayName}</h3>
                     </div>
@@ -221,6 +234,17 @@
             document.getElementById('modal-cat-name').innerText = modalCatDisplay;
             document.getElementById('modal-read-btn').innerText = lang === 'HI' ? "📖 आर्टिकल पढ़ें" : "📖 Read Article";
             document.getElementById('modal-quiz-btn').innerText = lang === 'HI' ? "📝 क्विज शुरू करें" : "📝 Start Quiz";
+            
+            // Text Configuration Translation UI
+            document.getElementById('config-label').innerText = lang === 'HI' ? "प्रश्नों की संख्या चुनें:" : "Question Count Pattern:";
+            const selectEl = document.getElementById('quizQuestionCount');
+            selectEl.options[0].text = lang === 'HI' ? "SSC ऑफिशियल GS पैटर्न (25 Qs)" : "SSC Official GS Pattern (25 Qs)";
+            selectEl.options[1].text = lang === 'HI' ? "त्वरित अभ्यास (5 Qs)" : "Quick Practice (5 Qs)";
+            selectEl.options[2].text = lang === 'HI' ? "स्टैंडर्ड सेट (10 Qs)" : "Standard Set (10 Qs)";
+            selectEl.options[3].text = lang === 'HI' ? "मध्यम अभ्यास (15 Qs)" : "Medium Sprint (15 Qs)";
+            selectEl.options[4].text = lang === 'HI' ? "मेगा ड्रिल सेट (20 Qs)" : "Mega Drill (20 Qs)";
+
+            document.getElementById('quiz-config-panel').classList.remove('hidden');
             document.getElementById('selection-modal').classList.remove('hidden');
         }
 
@@ -238,7 +262,6 @@
             const arts = db.filter(i => i.Category === curCat && i.Type === 'Article').sort((a,b)=>a.Order-b.Order);
             
             arts.forEach(art => {
-                // Feature Fixed: Chapter names now change according to selected language language toggle
                 const chapterTitle = lang === 'HI' ? art.Chapter : (art.Chapter_EN || art.Chapter);
                 const d = document.createElement('div');
                 d.className = "card p-4 rounded-xl flex justify-between items-center font-bold text-sm border-l-4 border-amber-500 shadow-sm cursor-pointer";
@@ -249,8 +272,16 @@
         }
 
         function openArticle(art) {
+            currentOpenArticleData = art; // Saved state globally
             changeState('article-view');
             showViewDirectly('article-view');
+            updateArticleUI();
+        }
+
+        // Bug Fixed: Interactive engine to refresh reader strings immediately when language button is tapped
+        function updateArticleUI() {
+            if (!currentOpenArticleData) return;
+            const art = currentOpenArticleData;
             document.getElementById('art-title').innerText = lang === 'HI' ? art.Chapter : (art.Chapter_EN || art.Chapter);
             document.getElementById('art-body').innerText = (lang==='HI' ? art.Explanation_HI : art.Explanation_EN || art.Explanation_HI);
         }
@@ -259,7 +290,11 @@
             closeModal();
             changeState('quiz-view');
             showViewDirectly('quiz-view');
-            activeData = db.filter(i => i.Category === curCat && i.Type === 'Quiz').sort(()=>0.5-Math.random()).slice(0, 10);
+            
+            // Feature Added: Reading custom options from drop-down module selection
+            const chosenCount = parseInt(document.getElementById('quizQuestionCount').value) || 10;
+            
+            activeData = db.filter(i => i.Category === curCat && i.Type === 'Quiz').sort(()=>0.5-Math.random()).slice(0, chosenCount);
             userChoices = new Array(activeData.length).fill(null);
             curIdx = 0;
             renderQuestion();
@@ -375,10 +410,10 @@
             lang = (lang === 'HI' ? 'EN' : 'HI'); 
             document.getElementById('langBtn').innerText = lang;
             
-            // Re-render components based on current view stack state
             if(!document.getElementById('home-view').classList.contains('hidden')) renderHome();
             if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion();
             if(!document.getElementById('chapter-view').classList.contains('hidden')) openChapterList();
+            if(!document.getElementById('article-view').classList.contains('hidden')) updateArticleUI(); // Realtime sync update fix
         }
 
         function navigateHome() {
