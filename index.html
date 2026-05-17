@@ -22,6 +22,9 @@
         .dark .explanation-box { background: #1e293b; color: #cbd5e1; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .timer-line { transition: width 1s linear; }
+        .avatar-option { cursor: pointer; transition: 0.2s; }
+        .avatar-option:hover { transform: scale(1.1); }
+        .avatar-selected { border: 3px solid #2563eb; box-shadow: 0 0 10px rgba(37, 99, 235, 0.5); }
     </style>
 </head>
 <body class="light">
@@ -33,11 +36,12 @@
         <div class="p-5 h-full flex flex-col justify-between">
             <div class="space-y-5">
                 <div class="flex items-center gap-3.5 border-b pb-4 relative">
-                    <div class="w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-lg font-black shadow-md shadow-blue-500/20" id="profile-avatar">G</div>
+                    <div id="profile-avatar-container" onclick="openProfileModal()" class="w-14 h-14 rounded-full flex items-center justify-center text-white overflow-hidden cursor-pointer shadow-md shadow-blue-500/20 bg-gray-200">
+                        </div>
                     <div class="flex-1">
                         <div class="flex items-center gap-1.5">
                             <span id="profile-name-span" class="font-black text-sm tracking-tight truncate max-w-[140px]">Guest User</span>
-                            <button onclick="triggerProfileEditName()" class="text-xs text-blue-500 hover:text-blue-600"><i class="fas fa-pencil text-[11px]"></i></button>
+                            <button onclick="openProfileModal()" class="text-xs text-blue-500 hover:text-blue-600"><i class="fas fa-pencil text-[11px]"></i></button>
                         </div>
                         <p class="text-[9px] text-gray-400 font-extrabold uppercase tracking-wider">Aspirant Workspace</p>
                     </div>
@@ -217,6 +221,35 @@
         </div>
     </div>
 
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-[1100] backdrop-blur-sm">
+        <div class="card w-full max-w-sm rounded-[28px] p-6 shadow-2xl text-center animate-slideIn max-h-[90vh] overflow-y-auto">
+            <h3 class="text-base font-black text-blue-600 uppercase tracking-tight mb-1" id="profile-modal-title">Edit Profile Workspace</h3>
+            <p class="text-gray-400 text-[11px] mb-4">Set your custom student banner credentials</p>
+            
+            <div class="text-left mb-4">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Enter Your Full Name:</label>
+                <input type="text" id="customProfileNameInput" placeholder="Aspirant Name" class="w-full p-3 rounded-xl border bg-gray-50 dark:bg-gray-900 font-bold text-sm outline-none border-gray-200 dark:border-gray-700 focus:border-blue-500">
+            </div>
+
+            <div class="mb-4 bg-blue-50/50 dark:bg-gray-800/40 p-3 rounded-xl border border-dashed border-blue-200 dark:border-gray-700 text-center">
+                <label class="block text-xs font-bold text-blue-600 dark:text-blue-400 cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fas fa-cloud-arrow-up text-sm"></i> <span>📸 Upload Custom Photo</span>
+                    <input type="file" id="galleryPhotoInput" accept="image/*" class="hidden" onchange="encodeCustomPhoto(this)">
+                </label>
+                <p id="upload-status-text" class="text-[9px] text-gray-400 font-bold mt-1 uppercase">Supports JPG, PNG (Max 1MB)</p>
+            </div>
+
+            <label class="block text-left text-[10px] font-bold text-gray-400 uppercase mb-2">Or Choose App Avatar:</label>
+            <div class="grid grid-cols-4 gap-3 mb-6" id="avatar-picker-grid">
+                </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeProfileModal()" class="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 py-3 rounded-xl font-bold text-xs uppercase tracking-wider">Cancel</button>
+                <button onclick="saveProfileData()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-blue-500/20">Save Profile</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API = 'https://opensheet.elk.sh/1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs/Sheet1';
         let db = [], curCat = '', activeData = [], userChoices = [], curIdx = 0, lang = 'HI', fs = 16;
@@ -226,6 +259,20 @@
         let adminTapCounter = 0;
         let adminModeUnlocked = false;
         let currentActiveVaultMode = "";
+
+        // Premium Predefined Local Avatars Array
+        const appAvatarsList = [
+            { id: "av1", url: "https://api.dicebear.com/7.x/bottts/svg?seed=Nerd&backgroundColor=b6e3f4" },
+            { id: "av2", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=c0aede" },
+            { id: "av3", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka&backgroundColor=d1d4f9" },
+            { id: "av4", url: "https://api.dicebear.com/7.x/open-peeps/svg?seed=BOY&backgroundColor=ffdfbf" },
+            { id: "av5", url: "https://api.dicebear.com/7.x/open-peeps/svg?seed=GIRL&backgroundColor=f2d5e2" },
+            { id: "av6", url: "https://api.dicebear.com/7.x/bottts/svg?seed=Robo&backgroundColor=ffdfb3" },
+            { id: "av7", url: "https://api.dicebear.com/7.x/initials/svg?seed=SSC&backgroundColor=3b82f6" },
+            { id: "av8", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Spike&backgroundColor=b6e3f4" }
+        ];
+        let tempSelectedAvatarId = "av1";
+        let tempCustomBase64String = ""; // Cache string holder for raw gallery input 
 
         window.addEventListener('popstate', function (event) {
             if (event.state) {
@@ -248,11 +295,12 @@
             if(viewId !== 'article-view') currentOpenArticleData = null;
         }
 
-        // Initialize Local Storage Arrays securely on run
         if(!localStorage.getItem('vault_bookmarks')) localStorage.setItem('vault_bookmarks', JSON.stringify([]));
         if(!localStorage.getItem('vault_wrongs')) localStorage.setItem('vault_wrongs', JSON.stringify([]));
         if(!localStorage.getItem('vault_skips')) localStorage.setItem('vault_skips', JSON.stringify([]));
         if(!localStorage.getItem('app_user_name')) localStorage.setItem('app_user_name', 'Guest User');
+        if(!localStorage.getItem('app_user_avatar')) localStorage.setItem('app_user_avatar', 'av1');
+        if(!localStorage.getItem('app_custom_photo')) localStorage.setItem('app_custom_photo', ''); // Clean empty default holder string
         if(!localStorage.getItem('stat_total_tests')) localStorage.setItem('stat_total_tests', '0');
         if(!localStorage.getItem('stat_total_score')) localStorage.setItem('stat_total_score', '0');
         if(!localStorage.getItem('stat_total_possible')) localStorage.setItem('stat_total_possible', '0');
@@ -266,10 +314,20 @@
 
         function initStatsAndProfile() {
             const name = localStorage.getItem('app_user_name') || 'Guest User';
+            const savedAvatarId = localStorage.getItem('app_user_avatar') || 'av1';
+            const savedCustomPhoto = localStorage.getItem('app_custom_photo') || '';
+            
             document.getElementById('profile-name-span').innerText = name;
-            document.getElementById('profile-avatar').innerText = name.charAt(0).toUpperCase();
+            const avatarContainer = document.getElementById('profile-avatar-container');
+            
+            // Check if student loaded a custom gallery picture to override stock library
+            if (savedCustomPhoto && savedCustomPhoto !== "") {
+                avatarContainer.innerHTML = `<img src="${savedCustomPhoto}" class="w-full h-full object-cover" alt="User Real Photo">`;
+            } else {
+                const avatarObj = appAvatarsList.find(a => a.id === savedAvatarId) || appAvatarsList[0];
+                avatarContainer.innerHTML = `<img src="${avatarObj.url}" class="w-full h-full object-cover" alt="Avatar Profile">`;
+            }
 
-            // Refresh analytical numerical counts
             document.getElementById('badge-bookmarks-count').innerText = JSON.parse(localStorage.getItem('vault_bookmarks')).length;
             document.getElementById('badge-wrongs-count').innerText = JSON.parse(localStorage.getItem('vault_wrongs')).length;
             document.getElementById('badge-skips-count').innerText = JSON.parse(localStorage.getItem('vault_skips')).length;
@@ -286,12 +344,74 @@
             document.getElementById('stats-accuracy-rate').innerText = `${accuracy}%`;
         }
 
-        function triggerProfileEditName() {
-            const oldName = localStorage.getItem('app_user_name') || 'Guest User';
-            const newName = prompt("Enter Your Full Name:", oldName);
-            if(newName && newName.trim() !== "") {
-                localStorage.setItem('app_user_name', newName.trim());
+        function openProfileModal() {
+            toggleSidebar(); 
+            const currentName = localStorage.getItem('app_user_name') || 'Guest User';
+            tempSelectedAvatarId = localStorage.getItem('app_user_avatar') || 'av1';
+            tempCustomBase64String = localStorage.getItem('app_custom_photo') || ''; // Read legacy custom text image
+            
+            document.getElementById('customProfileNameInput').value = currentName;
+            document.getElementById('profile-modal-title').innerText = lang === 'HI' ? "प्रोफाइल वर्कस्पेस बदलें" : "Edit Profile Workspace";
+            document.getElementById('upload-status-text').innerText = tempCustomBase64String !== "" ? "✅ Custom Photo Loaded!" : "Supports JPG, PNG (Max 1MB)";
+            
+            renderAvatarPickerOptions();
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
+
+        // Feature Processing Node: Compiles hardware input files safely into Local Base64 String format
+        function encodeCustomPhoto(element) {
+            const file = element.files[0];
+            if (!file) return;
+
+            if (file.size > 1024 * 1024) { // 1MB Safety Threshold Guardrail
+                alert("File size bada hai! Kripya 1MB se choti photo upload karein.");
+                element.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                tempCustomBase64String = reader.result; // Complete local raw string generated successfully
+                tempSelectedAvatarId = ""; // Unset avatars highlight indicator frame
+                document.getElementById('upload-status-text').innerText = "✅ Selected Custom Photo!";
+                renderAvatarPickerOptions();
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function renderAvatarPickerOptions() {
+            const grid = document.getElementById('avatar-picker-grid');
+            grid.innerHTML = "";
+            appAvatarsList.forEach(av => {
+                const isSelected = av.id === tempSelectedAvatarId && tempCustomBase64String === "";
+                const div = document.createElement('div');
+                div.className = `avatar-option w-12 h-12 bg-gray-100 rounded-full overflow-hidden p-1 bg-white dark:bg-gray-800 border ${isSelected ? 'avatar-selected' : 'border-gray-200/60 dark:border-gray-700'}`;
+                div.innerHTML = `<img src="${av.url}" class="w-full h-full object-cover rounded-full" alt="avatar">`;
+                div.onclick = () => {
+                    tempSelectedAvatarId = av.id;
+                    tempCustomBase64String = ""; // Wipe selected custom photo data context if stock item is clicked instead
+                    document.getElementById('upload-status-text').innerText = "Supports JPG, PNG (Max 1MB)";
+                    document.getElementById('galleryPhotoInput').value = ""; // Clear file selector handle cache
+                    renderAvatarPickerOptions();
+                };
+                grid.appendChild(div);
+            });
+        }
+
+        function saveProfileData() {
+            const inputVal = document.getElementById('customProfileNameInput').value;
+            if(inputVal && inputVal.trim() !== "") {
+                localStorage.setItem('app_user_name', inputVal.trim());
+                localStorage.setItem('app_user_avatar', tempSelectedAvatarId);
+                localStorage.setItem('app_custom_photo', tempCustomBase64String); // Locked and loaded securely inside localStorage string scope
                 initStatsAndProfile();
+                closeProfileModal();
+            } else {
+                alert(lang === 'HI' ? "कृपया एक मान्य नाम दर्ज करें!" : "Please enter a valid name!");
             }
         }
 
@@ -363,7 +483,7 @@
             const selectEl = document.getElementById('quizQuestionCount');
             selectEl.options[0].text = lang === 'HI' ? "SSC ऑफिशियल GS पैटर्न (25 Qs)" : "SSC Official GS Pattern (25 Qs)";
             selectEl.options[1].text = lang === 'HI' ? "त्वरित अभ्यास (5 Qs)" : "Quick Practice (5 Qs)";
-            selectEl.options[2].text = lang === 'HI' ? "स्टैंडर्ड集 (10 Qs)" : "Standard Set (10 Qs)";
+            selectEl.options[2].text = lang === 'HI' ? "स्टैंडर्ड सेट (10 Qs)" : "Standard Set (10 Qs)";
             selectEl.options[3].text = lang === 'HI' ? "मध्यम अभ्यास (15 Qs)" : "Medium Sprint (15 Qs)";
             selectEl.options[4].text = lang === 'HI' ? "मेगा ड्रिल सेट (20 Qs)" : "Mega Drill (20 Qs)";
 
@@ -453,7 +573,6 @@
             const cor = isHI ? q.Correct_HI : q.Correct_EN || q.Correct_HI;
             userChoices[curIdx] = { sel: 'TIMEOUT_EXPIRED', cor, exp: isHI ? q.Explanation_HI : q.Explanation_EN, tag: q.Tag, isRight: false, isSkipped: false };
             
-            // Push automatically into Wrong Attempt Repository Arrays
             pushToVault('vault_wrongs', q);
 
             if(document.getElementById('soundToggle').checked) {
@@ -472,7 +591,6 @@
 
             document.getElementById('quiz-progress').innerText = isHI ? `प्रश्न ${curIdx+1}/${activeData.length}` : `Question ${curIdx+1}/${activeData.length}`;
             
-            // Dynamic Bookmark Icon Status Synchronization Tracker
             const bkmkBtn = document.getElementById('bookmark-current-btn');
             if (isQuestionBookmarked(q)) {
                 bkmkBtn.className = "text-sm text-amber-500 transition";
@@ -526,7 +644,6 @@
             document.getElementById('prevBtn').style.opacity = (curIdx === 0) ? 0.3 : 1;
         }
 
-        // Feature Core: Manual Skipping Engine Operation
         function skipCurrentQuestion() {
             if(userChoices[curIdx]) return;
             clearInterval(timerInterval);
@@ -536,11 +653,9 @@
             
             userChoices[curIdx] = { sel: 'SKIPPED_NODE_VAL', cor, exp: isHI ? q.Explanation_HI : q.Explanation_EN, tag: q.Tag, isRight: false, isSkipped: true };
             
-            // Push metrics row into localized skipped caches
             pushToVault('vault_skips', q);
             renderQuestion();
             
-            // Auto skip progression trigger delay
             setTimeout(() => {
                 nextQ();
             }, 400);
@@ -553,7 +668,6 @@
             const right = (sel === cor);
             userChoices[curIdx] = { sel, cor, exp, tag, isRight: right, isSkipped: false };
             
-            // Log automatically if student commits an option error
             if(!right) {
                 pushToVault('vault_wrongs', q);
             }
@@ -574,7 +688,6 @@
             const score = userChoices.filter(u => u?.isRight).length;
             document.getElementById('final-score').innerText = `${score}/${activeData.length}`;
             
-            // Permanent Analytics Record Optimization Engine inside LocalStorage
             let totalTests = parseInt(localStorage.getItem('stat_total_tests')) || 0;
             let totalScore = parseInt(localStorage.getItem('stat_total_score')) || 0;
             let totalPossible = parseInt(localStorage.getItem('stat_total_possible')) || 0;
@@ -583,7 +696,7 @@
             localStorage.setItem('stat_total_score', (totalScore + score).toString());
             localStorage.setItem('stat_total_possible', (totalPossible + activeData.length).toString());
             
-            initStatsAndProfile(); // Live compute refresh onto settings drawer template matrix
+            initStatsAndProfile(); 
 
             const accuracyRatio = (score / activeData.length) * 100;
             const messageBox = document.getElementById('score-feedback-msg');
@@ -613,10 +726,8 @@
             `).join('');
         }
 
-        // Internal Client Side Vault Infrastructure Drivers
         function pushToVault(storageKey, qObj) {
             let list = JSON.parse(localStorage.getItem(storageKey)) || [];
-            // Prevent duplicated records stack compilation
             if(!list.some(item => item.Question_HI === qObj.Question_HI)) {
                 list.push(qObj);
                 localStorage.setItem(storageKey, JSON.stringify(list));
@@ -647,7 +758,7 @@
 
         function openSpecialVault(mode) {
             currentActiveVaultMode = mode;
-            toggleSidebar(); // Close drawer overlay panel framework
+            toggleSidebar(); 
             changeState('special-vault-view');
             showViewDirectly('special-vault-view');
 
@@ -656,7 +767,7 @@
             
             let storageKey = "vault_bookmarks";
             if(mode === 'Bookmarks') { titleNode.innerText = lang === 'HI' ? "बुकमार्क प्रश्न" : "Saved Bookmarks"; storageKey = "vault_bookmarks"; }
-            if(mode === 'Wrongs') { titleNode.innerText = lang === 'HI' ? "गलत किए गए प्रश्न" : "Wrong Attempt Logs"; storageKey = "vault_strings"; storageKey = "vault_wrongs"; }
+            if(mode === 'Wrongs') { titleNode.innerText = lang === 'HI' ? "गलत किए गए प्रश्न" : "Wrong Attempt Logs"; storageKey = "vault_wrongs"; }
             if(mode === 'Skips') { titleNode.innerText = lang === 'HI' ? "छोड़े गए प्रश्न" : "Skipped Repository"; storageKey = "vault_skips"; }
 
             clearBtn.onclick = () => {
