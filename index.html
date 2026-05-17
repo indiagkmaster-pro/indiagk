@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSC MASTER PRO - ADVANCED PREMIUM EDITION</title>
+    <title>SSC MASTER PRO - ELITE EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -30,47 +30,76 @@
     <audio id="sound-wrong" src="https://assets.mixkit.co/active_storage/sfx/2105/2105-preview.mp3"></audio>
 
     <div id="sidebar" class="sidebar fixed top-0 left-0 w-80 h-full card shadow-2xl -translate-x-full overflow-y-auto">
-        <div class="p-6 h-full flex flex-col justify-between">
+        <div class="p-5 h-full flex flex-col justify-between">
             <div class="space-y-5">
-                <div class="flex items-center gap-3 border-b pb-4">
-                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-black">S</div>
-                    <div>
-                        <h2 class="font-black text-sm tracking-tight text-blue-600">SSC MASTER PRO</h2>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase">Workspace Panel</p>
+                <div class="flex items-center gap-3.5 border-b pb-4 relative">
+                    <div class="w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-lg font-black shadow-md shadow-blue-500/20" id="profile-avatar">G</div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-1.5">
+                            <span id="profile-name-span" class="font-black text-sm tracking-tight truncate max-w-[140px]">Guest User</span>
+                            <button onclick="triggerProfileEditName()" class="text-xs text-blue-500 hover:text-blue-600"><i class="fas fa-pencil text-[11px]"></i></button>
+                        </div>
+                        <p class="text-[9px] text-gray-400 font-extrabold uppercase tracking-wider">Aspirant Workspace</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5 bg-gray-50 dark:bg-gray-800/40 p-3 rounded-xl border border-gray-100 dark:border-gray-800/80">
+                    <div class="text-center border-r border-gray-200/50 dark:border-gray-700/50">
+                        <span id="stats-tests-count" class="block font-black text-base text-blue-600 dark:text-blue-400">0</span>
+                        <span class="text-[9px] font-black text-gray-400 uppercase">Tests Taken</span>
+                    </div>
+                    <div class="text-center">
+                        <span id="stats-accuracy-rate" class="block font-black text-base text-emerald-500">0%</span>
+                        <span class="text-[9px] font-black text-gray-400 uppercase">Avg Accuracy</span>
                     </div>
                 </div>
                 
-                <div class="space-y-3">
+                <div class="space-y-2.5">
                     <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 transition">
-                        <span class="text-xs font-bold">Dark Theme</span> <i id="theme-icon" class="fas fa-moon text-blue-600"></i>
+                        <span class="text-xs font-bold">Dark UI Layout</span> <i id="theme-icon" class="fas fa-moon text-blue-600"></i>
                     </button>
                     <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60">
-                        <span class="text-xs font-bold">Haptic Sounds</span>
+                        <span class="text-xs font-bold">Haptic Feedback Sounds</span>
                         <input type="checkbox" id="soundToggle" checked class="w-4 h-4 accent-blue-600">
                     </div>
                     <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60">
-                        <span class="text-xs font-bold">Quiz Timer (30s)</span>
+                        <span class="text-xs font-bold">Countdown Clock (30s)</span>
                         <input type="checkbox" id="timerToggle" checked class="w-4 h-4 accent-blue-600">
                     </div>
                 </div>
 
                 <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60">
                     <div class="flex justify-between text-[10px] font-bold text-gray-400 mb-1.5 uppercase">
-                        <span>Font Tuning</span> <span id="fs-indicator">16px</span>
+                        <span>Font Scope Slider</span> <span id="fs-indicator">16px</span>
                     </div>
                     <input type="range" min="14" max="24" value="16" oninput="changeFontSize(this.value)" class="w-full accent-blue-600 h-1 rounded-lg cursor-pointer">
                 </div>
 
-                <div class="pt-2 space-y-2 border-t">
-                    <button onclick="shareApplication()" class="w-full text-left p-2.5 text-xs font-bold flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"><i class="fas fa-share-nodes text-blue-500"></i> Share App With Friends</button>
-                    <button onclick="triggerAppUpdate()" class="w-full text-left p-2.5 text-xs font-bold flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"><i class="fas fa-circle-up text-emerald-500"></i> Check For Updates</button>
+                <div class="pt-3 border-t space-y-1">
+                    <button onclick="openSpecialVault('Bookmarks')" class="w-full text-left p-2.5 text-xs font-bold flex items-center justify-between rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <span class="flex items-center gap-3"><i class="fas fa-bookmark text-amber-500"></i> Saved Bookmarks</span>
+                        <span id="badge-bookmarks-count" class="bg-gray-200 dark:bg-gray-700 text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
+                    </button>
+                    <button onclick="openSpecialVault('Wrongs')" class="w-full text-left p-2.5 text-xs font-bold flex items-center justify-between rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <span class="flex items-center gap-3"><i class="fas fa-circle-xmark text-red-500"></i> Wrong Attempt Logs</span>
+                        <span id="badge-wrongs-count" class="bg-gray-200 dark:bg-gray-700 text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
+                    </button>
+                    <button onclick="openSpecialVault('Skips')" class="w-full text-left p-2.5 text-xs font-bold flex items-center justify-between rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <span class="flex items-center gap-3"><i class="fas fa-forward text-blue-500"></i> Skipped Repository</span>
+                        <span id="badge-skips-count" class="bg-gray-200 dark:bg-gray-700 text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
+                    </button>
+                </div>
+
+                <div class="pt-2 border-t space-y-1.5">
+                    <button onclick="shareApplication()" class="w-full text-left p-2.5 text-[11px] font-bold flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"><i class="fas fa-share-nodes text-blue-500"></i> Share App With Friends</button>
+                    <button onclick="triggerAppUpdate()" class="w-full text-left p-2.5 text-[11px] font-bold flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"><i class="fas fa-circle-up text-emerald-500"></i> Check For Updates</button>
                 </div>
             </div>
 
             <div class="pt-4 border-t text-center">
-                <p id="version-node" onclick="registerAdminTap()" class="text-[10px] font-bold text-gray-300 dark:text-gray-600 cursor-pointer select-none">Version 1.0.5 (Stable)</p>
+                <p id="version-node" onclick="registerAdminTap()" class="text-[10px] font-bold text-gray-300 dark:text-gray-600 cursor-pointer select-none">Version 1.1.0 (Stable)</p>
                 <div id="admin-pass-vault" class="mt-2 hidden">
-                    <input type="password" id="adminSecretKey" placeholder="Enter Secret Code" class="w-full text-xs p-2 rounded-lg border text-center dark:bg-gray-900 outline-none" oninput="verifyAdminKey(this.value)">
+                    <input type="password" id="adminSecretKey" placeholder="Verify Token Key" class="w-full text-xs p-2 rounded-lg border text-center dark:bg-gray-900 outline-none" oninput="verifyAdminKey(this.value)">
                 </div>
             </div>
         </div>
@@ -90,11 +119,11 @@
         <div id="home-view" class="space-y-6">
             <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-3xl text-white shadow-xl">
                 <h2 class="text-xl font-black mb-1" id="welcome-title">नमस्ते, तैयारी शुरू करें!</h2>
-                <p class="text-xs text-blue-100" id="welcome-sub">Your Gateway to Competitive Excellence</p>
+                <p class="text-xs text-blue-100" id="welcome-sub">SSC MASTER PRO - सफलता की नई उड़ान</p>
             </div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 px-1" id="section-title">Exam Categories</h3>
             <div id="categories-grid" class="grid grid-cols-1 gap-4">
-                <div id="loading" class="text-center py-20 text-gray-400">Syncing Live Cloud Sheets...</div>
+                <div id="loading" class="text-center py-20 text-gray-400">Syncing Cloud Database Engine...</div>
             </div>
         </div>
 
@@ -108,15 +137,18 @@
             <div class="card p-6 rounded-2xl shadow-xl">
                 <h2 id="art-title" class="text-xl font-bold text-blue-600 mb-4 border-b pb-2"></h2>
                 <div id="art-body" class="text-sm leading-relaxed whitespace-pre-wrap font-normal text-gray-700 dark:text-gray-300"></div>
-                <button onclick="backToChapters()" class="w-full bg-blue-600 text-white p-4 rounded-xl mt-8 font-bold shadow-md">Back to Chapters</button>
+                <button onclick="backToChapters()" class="w-full bg-blue-600 text-white p-4 rounded-xl mt-8 font-bold">Back to Chapters</button>
             </div>
         </div>
 
         <div id="quiz-view" class="hidden">
             <div class="flex justify-between items-center mb-2 px-2">
                 <span id="quiz-progress" class="text-xs font-bold opacity-50"></span>
-                <div id="timer-badge" class="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-full hidden">
-                    <i class="fas fa-clock"></i> <span id="timer-text">30s</span>
+                <div class="flex items-center gap-3">
+                    <button id="bookmark-current-btn" onclick="toggleCurrentQuestionBookmark()" class="text-sm text-gray-400 hover:text-amber-500 transition"><i class="fas fa-bookmark"></i></button>
+                    <div id="timer-badge" class="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-full hidden">
+                        <i class="fas fa-clock"></i> <span id="timer-text">30s</span>
+                    </div>
                 </div>
             </div>
             <div class="card p-6 rounded-3xl shadow-xl min-h-[350px] relative overflow-hidden">
@@ -124,23 +156,33 @@
                 <div id="quiz-content" class="mt-2"></div>
                 <div id="feedback-area" class="hidden"></div>
             </div>
-            <div class="flex gap-4 mt-6">
-                <button id="prevBtn" onclick="prevQ()" class="flex-1 bg-gray-200 dark:bg-gray-800 p-4 rounded-xl font-bold opacity-30" disabled>Prev</button>
-                <button id="nextBtn" onclick="nextQ()" class="flex-1 bg-blue-600 text-white p-4 rounded-xl font-bold">Next</button>
+            <div class="flex gap-2 mt-6">
+                <button id="prevBtn" onclick="prevQ()" class="flex-1 bg-gray-200 dark:bg-gray-800 py-4 px-2 rounded-xl font-bold text-xs shadow-sm transition" disabled>Prev</button>
+                <button id="skipBtn" onclick="skipCurrentQuestion()" class="flex-1 bg-amber-500 text-white py-4 px-2 rounded-xl font-bold text-xs shadow-sm transition">Skip Q</button>
+                <button id="nextBtn" onclick="nextQ()" class="flex-1 bg-blue-600 text-white py-4 px-2 rounded-xl font-bold text-xs shadow-sm transition">Next</button>
             </div>
         </div>
 
         <div id="result-view" class="hidden text-center">
-            <div class="card p-10 rounded-[40px] shadow-2xl">
-                <h3 id="score-feedback-msg" class="text-sm font-black text-blue-600 mb-1 uppercase tracking-wide">Performance Status</h3>
-                <h2 class="text-gray-400 font-bold uppercase text-[10px] mb-2 tracking-wider">Final Correct Accuracy</h2>
-                <div id="final-score" class="text-6xl font-black text-blue-600 mb-6">0/0</div>
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="navigateHome()" class="bg-blue-600 text-white p-4 rounded-2xl font-bold">Restart</button>
-                    <button onclick="toggleReview()" class="bg-gray-800 text-white p-4 rounded-2xl font-bold text-sm">Review Ans</button>
+            <div class="card p-8 rounded-[40px] shadow-2xl">
+                <h3 id="score-feedback-msg" class="text-xs font-black text-blue-600 mb-1 uppercase tracking-wide">Performance Summary</h3>
+                <h2 class="text-gray-400 font-bold uppercase text-[9px] mb-2 tracking-wider">Evaluation Metrics</h2>
+                <div id="final-score" class="text-5xl font-black text-blue-600 mb-6">0/0</div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="navigateHome()" class="bg-blue-600 text-white p-3.5 rounded-xl font-bold text-xs shadow-sm transition">Dashboard</button>
+                    <button onclick="toggleReview()" class="bg-gray-800 text-white p-3.5 rounded-xl font-bold text-xs shadow-sm transition">Review Script</button>
                 </div>
             </div>
             <div id="review-area" class="hidden mt-6 space-y-4 text-left pb-20"></div>
+        </div>
+
+        <div id="special-vault-view" class="hidden">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h2 id="vault-view-title" class="text-lg font-black text-blue-600 uppercase">Vault Logs</h2>
+                <button id="vault-clear-btn" class="text-xs font-black text-red-500 uppercase bg-red-500/10 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash-can"></i> Clear All</button>
+            </div>
+            <div id="vault-items-container" class="space-y-4 text-left pb-20"></div>
+            <button onclick="navigateHome()" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-8 py-3.5 rounded-full font-bold shadow-xl tracking-wide text-xs uppercase"><i class="fas fa-chevron-left"></i> Main Console</button>
         </div>
     </div>
 
@@ -181,9 +223,9 @@
         let timerInterval, timeLeft = 30;
         let currentOpenArticleData = null;
         
-        // Admin Module State Switches
         let adminTapCounter = 0;
         let adminModeUnlocked = false;
+        let currentActiveVaultMode = "";
 
         window.addEventListener('popstate', function (event) {
             if (event.state) {
@@ -199,18 +241,59 @@
 
         function showViewDirectly(viewId) {
             clearInterval(timerInterval);
-            ['home-view', 'chapter-view', 'article-view', 'quiz-view', 'result-view'].forEach(id => {
+            ['home-view', 'chapter-view', 'article-view', 'quiz-view', 'result-view', 'special-vault-view'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(viewId).classList.remove('hidden');
             if(viewId !== 'article-view') currentOpenArticleData = null;
         }
 
+        // Initialize Local Storage Arrays securely on run
+        if(!localStorage.getItem('vault_bookmarks')) localStorage.setItem('vault_bookmarks', JSON.stringify([]));
+        if(!localStorage.getItem('vault_wrongs')) localStorage.setItem('vault_wrongs', JSON.stringify([]));
+        if(!localStorage.getItem('vault_skips')) localStorage.setItem('vault_skips', JSON.stringify([]));
+        if(!localStorage.getItem('app_user_name')) localStorage.setItem('app_user_name', 'Guest User');
+        if(!localStorage.getItem('stat_total_tests')) localStorage.setItem('stat_total_tests', '0');
+        if(!localStorage.getItem('stat_total_score')) localStorage.setItem('stat_total_score', '0');
+        if(!localStorage.getItem('stat_total_possible')) localStorage.setItem('stat_total_possible', '0');
+
         fetch(API).then(r => r.json()).then(data => {
             db = data;
             document.getElementById('loading').classList.add('hidden');
+            initStatsAndProfile();
             renderHome();
         });
+
+        function initStatsAndProfile() {
+            const name = localStorage.getItem('app_user_name') || 'Guest User';
+            document.getElementById('profile-name-span').innerText = name;
+            document.getElementById('profile-avatar').innerText = name.charAt(0).toUpperCase();
+
+            // Refresh analytical numerical counts
+            document.getElementById('badge-bookmarks-count').innerText = JSON.parse(localStorage.getItem('vault_bookmarks')).length;
+            document.getElementById('badge-wrongs-count').innerText = JSON.parse(localStorage.getItem('vault_wrongs')).length;
+            document.getElementById('badge-skips-count').innerText = JSON.parse(localStorage.getItem('vault_skips')).length;
+
+            const totalTests = parseInt(localStorage.getItem('stat_total_tests')) || 0;
+            const totalScore = parseInt(localStorage.getItem('stat_total_score')) || 0;
+            const totalPossible = parseInt(localStorage.getItem('stat_total_possible')) || 0;
+
+            document.getElementById('stats-tests-count').innerText = totalTests;
+            let accuracy = 0;
+            if (totalPossible > 0) {
+                accuracy = Math.round((totalScore / totalPossible) * 100);
+            }
+            document.getElementById('stats-accuracy-rate').innerText = `${accuracy}%`;
+        }
+
+        function triggerProfileEditName() {
+            const oldName = localStorage.getItem('app_user_name') || 'Guest User';
+            const newName = prompt("Enter Your Full Name:", oldName);
+            if(newName && newName.trim() !== "") {
+                localStorage.setItem('app_user_name', newName.trim());
+                initStatsAndProfile();
+            }
+        }
 
         const categoryTranslation = {
             "History": "इतिहास (History)",
@@ -245,7 +328,6 @@
             cats.forEach(cat => {
                 const displayName = lang === 'HI' ? (categoryTranslation[cat] || cat) : cat;
                 
-                // Advanced Hidden Verification: Total audit count selector
                 let totalQuestionsStr = "";
                 if (adminModeUnlocked) {
                     const totalCount = db.filter(i => i.Category === cat && i.Type === 'Quiz').length;
@@ -281,7 +363,7 @@
             const selectEl = document.getElementById('quizQuestionCount');
             selectEl.options[0].text = lang === 'HI' ? "SSC ऑफिशियल GS पैटर्न (25 Qs)" : "SSC Official GS Pattern (25 Qs)";
             selectEl.options[1].text = lang === 'HI' ? "त्वरित अभ्यास (5 Qs)" : "Quick Practice (5 Qs)";
-            selectEl.options[2].text = lang === 'HI' ? "स्टैंडर्ड सेट (10 Qs)" : "Standard Set (10 Qs)";
+            selectEl.options[2].text = lang === 'HI' ? "स्टैंडर्ड集 (10 Qs)" : "Standard Set (10 Qs)";
             selectEl.options[3].text = lang === 'HI' ? "मध्यम अभ्यास (15 Qs)" : "Medium Sprint (15 Qs)";
             selectEl.options[4].text = lang === 'HI' ? "मेगा ड्रिल सेट (20 Qs)" : "Mega Drill (20 Qs)";
 
@@ -324,7 +406,6 @@
             const art = currentOpenArticleData;
             document.getElementById('art-title').innerText = lang === 'HI' ? art.Chapter : (art.Chapter_EN || art.Chapter);
             
-            // Dynamic Typography Suite Integration
             const artBodyNode = document.getElementById('art-body');
             artBodyNode.style.fontSize = `${fs}px`;
             artBodyNode.innerText = (lang==='HI' ? art.Explanation_HI : art.Explanation_EN || art.Explanation_HI);
@@ -370,7 +451,11 @@
             const q = activeData[curIdx];
             const isHI = lang === 'HI';
             const cor = isHI ? q.Correct_HI : q.Correct_EN || q.Correct_HI;
-            userChoices[curIdx] = { sel: 'TIMEOUT_EXPIRED', cor, exp: isHI ? q.Explanation_HI : q.Explanation_EN, tag: q.Tag, isRight: false };
+            userChoices[curIdx] = { sel: 'TIMEOUT_EXPIRED', cor, exp: isHI ? q.Explanation_HI : q.Explanation_EN, tag: q.Tag, isRight: false, isSkipped: false };
+            
+            // Push automatically into Wrong Attempt Repository Arrays
+            pushToVault('vault_wrongs', q);
+
             if(document.getElementById('soundToggle').checked) {
                 document.getElementById('sound-wrong').currentTime = 0;
                 document.getElementById('sound-wrong').play();
@@ -387,19 +472,30 @@
 
             document.getElementById('quiz-progress').innerText = isHI ? `प्रश्न ${curIdx+1}/${activeData.length}` : `Question ${curIdx+1}/${activeData.length}`;
             
+            // Dynamic Bookmark Icon Status Synchronization Tracker
+            const bkmkBtn = document.getElementById('bookmark-current-btn');
+            if (isQuestionBookmarked(q)) {
+                bkmkBtn.className = "text-sm text-amber-500 transition";
+            } else {
+                bkmkBtn.className = "text-sm text-gray-400 dark:text-gray-600 hover:text-amber-500 transition";
+            }
+
             if(!ans) {
                 startTimer();
                 if(document.getElementById('timerToggle').checked) {
                     document.getElementById('timer-badge').classList.remove('hidden');
                     document.getElementById('visual-timer-bar').classList.remove('hidden');
                 }
+                document.getElementById('skipBtn').disabled = false;
+                document.getElementById('skipBtn').style.opacity = 1;
             } else {
                 clearInterval(timerInterval);
                 document.getElementById('timer-badge').classList.add('hidden');
                 document.getElementById('visual-timer-bar').classList.add('hidden');
+                document.getElementById('skipBtn').disabled = true;
+                document.getElementById('skipBtn').style.opacity = 0.3;
             }
 
-            // Live Feature Integration: Extracted dynamic year tags directly under heading string
             const liveYearTagStr = q.Tag ? `<div class="mt-2 inline-flex items-center gap-1 bg-blue-50 dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider"><i class="fas fa-tag text-[9px]"></i> ${q.Tag}</div>` : '';
 
             document.getElementById('quiz-content').innerHTML = `
@@ -412,13 +508,16 @@
                             if(o === cor) cls = "correct";
                             else if(o === ans.sel) cls = "wrong";
                         }
-                        return `<button class="option-btn ${cls}" onclick="check('${o.replace(/'/g, "\\'")}', '${cor.replace(/'/g, "\\'")}', '${(isHI?q.Explanation_HI:q.Explanation_EN).replace(/'/g, "\\'")}', '${q.Tag}')">${o}</button>`;
+                        return `<button class="option-btn ${cls}" ${ans ? 'disabled' : ''} onclick="check('${o.replace(/'/g, "\\'")}', '${cor.replace(/'/g, "\\'")}', '${(isHI?q.Explanation_HI:q.Explanation_EN).replace(/'/g, "\\'")}', '${q.Tag}')">${o}</button>`;
                     }).join('')}
                 </div>
             `;
             
             const fb = document.getElementById('feedback-area');
             if(ans) {
+                if(ans.isSkipped) {
+                    document.getElementById('quiz-content').insertAdjacentHTML('afterbegin', `<div class="mb-3 text-xs font-black text-amber-500 uppercase tracking-widest"><i class="fas fa-forward"></i> Question Skipped Manually</div>`);
+                }
                 fb.innerHTML = `<div class="explanation-box"><b>Explanation:</b><br>${ans.exp}</div>`;
                 fb.classList.remove('hidden');
             } else fb.classList.add('hidden');
@@ -427,11 +526,38 @@
             document.getElementById('prevBtn').style.opacity = (curIdx === 0) ? 0.3 : 1;
         }
 
+        // Feature Core: Manual Skipping Engine Operation
+        function skipCurrentQuestion() {
+            if(userChoices[curIdx]) return;
+            clearInterval(timerInterval);
+            const q = activeData[curIdx];
+            const isHI = lang === 'HI';
+            const cor = isHI ? q.Correct_HI : q.Correct_EN || q.Correct_HI;
+            
+            userChoices[curIdx] = { sel: 'SKIPPED_NODE_VAL', cor, exp: isHI ? q.Explanation_HI : q.Explanation_EN, tag: q.Tag, isRight: false, isSkipped: true };
+            
+            // Push metrics row into localized skipped caches
+            pushToVault('vault_skips', q);
+            renderQuestion();
+            
+            // Auto skip progression trigger delay
+            setTimeout(() => {
+                nextQ();
+            }, 400);
+        }
+
         function check(sel, cor, exp, tag) {
             if(userChoices[curIdx]) return;
             clearInterval(timerInterval);
+            const q = activeData[curIdx];
             const right = (sel === cor);
-            userChoices[curIdx] = { sel, cor, exp, tag, isRight: right };
+            userChoices[curIdx] = { sel, cor, exp, tag, isRight: right, isSkipped: false };
+            
+            // Log automatically if student commits an option error
+            if(!right) {
+                pushToVault('vault_wrongs', q);
+            }
+
             if(document.getElementById('soundToggle').checked) {
                 const s = document.getElementById(right ? 'sound-correct' : 'sound-wrong');
                 s.currentTime = 0; s.play();
@@ -448,7 +574,17 @@
             const score = userChoices.filter(u => u?.isRight).length;
             document.getElementById('final-score').innerText = `${score}/${activeData.length}`;
             
-            // Scorecard performance calculation engine
+            // Permanent Analytics Record Optimization Engine inside LocalStorage
+            let totalTests = parseInt(localStorage.getItem('stat_total_tests')) || 0;
+            let totalScore = parseInt(localStorage.getItem('stat_total_score')) || 0;
+            let totalPossible = parseInt(localStorage.getItem('stat_total_possible')) || 0;
+
+            localStorage.setItem('stat_total_tests', (totalTests + 1).toString());
+            localStorage.setItem('stat_total_score', (totalScore + score).toString());
+            localStorage.setItem('stat_total_possible', (totalPossible + activeData.length).toString());
+            
+            initStatsAndProfile(); // Live compute refresh onto settings drawer template matrix
+
             const accuracyRatio = (score / activeData.length) * 100;
             const messageBox = document.getElementById('score-feedback-msg');
             
@@ -477,6 +613,87 @@
             `).join('');
         }
 
+        // Internal Client Side Vault Infrastructure Drivers
+        function pushToVault(storageKey, qObj) {
+            let list = JSON.parse(localStorage.getItem(storageKey)) || [];
+            // Prevent duplicated records stack compilation
+            if(!list.some(item => item.Question_HI === qObj.Question_HI)) {
+                list.push(qObj);
+                localStorage.setItem(storageKey, JSON.stringify(list));
+            }
+            initStatsAndProfile();
+        }
+
+        function isQuestionBookmarked(qObj) {
+            let list = JSON.parse(localStorage.getItem('vault_bookmarks')) || [];
+            return list.some(item => item.Question_HI === qObj.Question_HI);
+        }
+
+        function toggleCurrentQuestionBookmark() {
+            const q = activeData[curIdx];
+            let list = JSON.parse(localStorage.getItem('vault_bookmarks')) || [];
+            
+            if(isQuestionBookmarked(q)) {
+                list = list.filter(item => item.Question_HI !== q.Question_HI);
+                alert("Sawal Saved List se Hata Diya Gaya!");
+            } else {
+                list.push(q);
+                alert("Sawal Bookmarks List mein Save ho Gaya!");
+            }
+            localStorage.setItem('vault_bookmarks', JSON.stringify(list));
+            initStatsAndProfile();
+            renderQuestion();
+        }
+
+        function openSpecialVault(mode) {
+            currentActiveVaultMode = mode;
+            toggleSidebar(); // Close drawer overlay panel framework
+            changeState('special-vault-view');
+            showViewDirectly('special-vault-view');
+
+            const titleNode = document.getElementById('vault-view-title');
+            const clearBtn = document.getElementById('vault-clear-btn');
+            
+            let storageKey = "vault_bookmarks";
+            if(mode === 'Bookmarks') { titleNode.innerText = lang === 'HI' ? "बुकमार्क प्रश्न" : "Saved Bookmarks"; storageKey = "vault_bookmarks"; }
+            if(mode === 'Wrongs') { titleNode.innerText = lang === 'HI' ? "गलत किए गए प्रश्न" : "Wrong Attempt Logs"; storageKey = "vault_strings"; storageKey = "vault_wrongs"; }
+            if(mode === 'Skips') { titleNode.innerText = lang === 'HI' ? "छोड़े गए प्रश्न" : "Skipped Repository"; storageKey = "vault_skips"; }
+
+            clearBtn.onclick = () => {
+                if(confirm("Kya aap is poori repository list ko khali karna chahte hain?")) {
+                    localStorage.setItem(storageKey, JSON.stringify([]));
+                    openSpecialVault(mode);
+                }
+            };
+
+            const container = document.getElementById('vault-items-container'); container.innerHTML = '';
+            let dataList = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if(dataList.length === 0) {
+                container.innerHTML = `<div class="text-center text-xs py-20 text-gray-400 font-bold uppercase tracking-wider">Is Archive List Mein Koi Data Nahi Mila!</div>`;
+                return;
+            }
+
+            dataList.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = "card p-5 rounded-2xl border-l-4 border-blue-600 space-y-2.5 shadow-sm relative";
+                
+                const isHI = lang === 'HI';
+                const headingText = isHI ? q.Question_HI : q.Question_EN;
+                const correctOptionText = isHI ? q.Correct_HI : q.Correct_EN || q.Correct_HI;
+                const expText = isHI ? q.Explanation_HI : q.Explanation_EN;
+                const dynamicYearTag = q.Tag ? `<span class="inline-block bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-[9px] rounded font-black text-gray-500 uppercase tracking-wide">${q.Tag}</span>` : '';
+
+                div.innerHTML = `
+                    <div class="text-xs font-black text-blue-600 uppercase">Item Stack #${index + 1} ${dynamicYearTag}</div>
+                    <p class="font-extrabold text-sm leading-snug">${headingText}</p>
+                    <div class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 dark:text-emerald-400 p-2.5 rounded-lg border border-emerald-200/40"><i class="fas fa-circle-check"></i> Sahi Answer: ${correctOptionText}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 p-3 rounded-xl leading-relaxed whitespace-pre-wrap font-normal"><b>Explanation:</b><br>${expText}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
         function toggleLang() { 
             lang = (lang === 'HI' ? 'EN' : 'HI'); 
             document.getElementById('langBtn').innerText = lang;
@@ -485,6 +702,7 @@
             if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion();
             if(!document.getElementById('chapter-view').classList.contains('hidden')) openChapterList();
             if(!document.getElementById('article-view').classList.contains('hidden')) updateArticleUI();
+            if(!document.getElementById('special-vault-view').classList.contains('hidden')) openSpecialVault(currentActiveVaultMode);
         }
 
         function navigateHome() {
@@ -498,24 +716,22 @@
             openChapterList();
         }
 
-        // Standard Utility Node Triggers
         function shareApplication() {
             if (navigator.share) {
                 navigator.share({
                     title: 'SSC MASTER PRO',
-                    text: 'Join SSC MASTER PRO by Vision Coaching Classes for elite preparation!',
+                    text: 'Join SSC MASTER PRO for elite preparation!',
                     url: window.location.href
                 }).catch(() => {});
             } else {
-                alert("App Link Copied To Clipboard! Share with your students.");
+                alert("App Link Copied! Share this with your target student circles.");
             }
         }
 
         function triggerAppUpdate() {
-            alert("Checking Cloud Repository... Aap pehle se hi latest aur stable version v1.0.5 par hain!");
+            alert("Cloud Synced! Aap pehle se hi elite standard update v1.1.0 par chal rahe hain.");
         }
 
-        // Invisible Admin Security Locks Engine
         function registerAdminTap() {
             if(adminModeUnlocked) return;
             adminTapCounter++;
@@ -526,17 +742,15 @@
         }
 
         function verifyAdminKey(val) {
-            // Invisible Validation Match
             if(val === "admin108") {
                 adminModeUnlocked = true;
                 document.getElementById('admin-pass-vault').classList.add('hidden');
                 document.getElementById('adminSecretKey').value = "";
-                alert("Admin Access Unlocked! Total category count lists are now live.");
+                alert("Admin Verification Complete! Question count list values are now live.");
                 if(!document.getElementById('home-view').classList.contains('hidden')) renderHome();
             }
         }
 
-        // Stable Range Scope Typography Suite
         function changeFontSize(v) { 
             fs = parseInt(v); 
             document.getElementById('fs-indicator').innerText = v + 'px';
