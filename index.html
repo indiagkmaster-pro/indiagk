@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VISION SSC GS MASTER PRO</title>
+    <title>SSC MASTER PRO - ADVANCED PREMIUM EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -29,31 +29,58 @@
     <audio id="sound-correct" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
     <audio id="sound-wrong" src="https://assets.mixkit.co/active_storage/sfx/2105/2105-preview.mp3"></audio>
 
-    <div id="sidebar" class="sidebar fixed top-0 left-0 w-72 h-full card shadow-2xl -translate-x-full">
+    <div id="sidebar" class="sidebar fixed top-0 left-0 w-80 h-full card shadow-2xl -translate-x-full overflow-y-auto">
         <div class="p-6 h-full flex flex-col justify-between">
-            <div class="space-y-6">
-                <h2 class="text-xl font-black text-blue-600 tracking-tighter uppercase">SETTINGS</h2>
-                <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
-                    <span>Dark Mode</span> <i id="theme-icon" class="fas fa-moon"></i>
-                </button>
-                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
-                    <span>Sounds</span>
-                    <input type="checkbox" id="soundToggle" checked>
+            <div class="space-y-5">
+                <div class="flex items-center gap-3 border-b pb-4">
+                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-black">S</div>
+                    <div>
+                        <h2 class="font-black text-sm tracking-tight text-blue-600">SSC MASTER PRO</h2>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase">Workspace Panel</p>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-[10px] font-bold text-gray-400 mb-2">Font Size</p>
-                    <input type="range" min="14" max="24" value="16" oninput="changeFontSize(this.value)" class="w-full">
+                
+                <div class="space-y-3">
+                    <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 transition">
+                        <span class="text-xs font-bold">Dark Theme</span> <i id="theme-icon" class="fas fa-moon text-blue-600"></i>
+                    </button>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60">
+                        <span class="text-xs font-bold">Haptic Sounds</span>
+                        <input type="checkbox" id="soundToggle" checked class="w-4 h-4 accent-blue-600">
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60">
+                        <span class="text-xs font-bold">Quiz Timer (30s)</span>
+                        <input type="checkbox" id="timerToggle" checked class="w-4 h-4 accent-blue-600">
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60">
+                    <div class="flex justify-between text-[10px] font-bold text-gray-400 mb-1.5 uppercase">
+                        <span>Font Tuning</span> <span id="fs-indicator">16px</span>
+                    </div>
+                    <input type="range" min="14" max="24" value="16" oninput="changeFontSize(this.value)" class="w-full accent-blue-600 h-1 rounded-lg cursor-pointer">
+                </div>
+
+                <div class="pt-2 space-y-2 border-t">
+                    <button onclick="shareApplication()" class="w-full text-left p-2.5 text-xs font-bold flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"><i class="fas fa-share-nodes text-blue-500"></i> Share App With Friends</button>
+                    <button onclick="triggerAppUpdate()" class="w-full text-left p-2.5 text-xs font-bold flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"><i class="fas fa-circle-up text-emerald-500"></i> Check For Updates</button>
                 </div>
             </div>
-            <button onclick="navigateHome()" class="w-full text-center p-3 font-bold text-blue-600 bg-blue-50 dark:bg-gray-800 rounded-xl"><i class="fas fa-home"></i> Home Screen</button>
+
+            <div class="pt-4 border-t text-center">
+                <p id="version-node" onclick="registerAdminTap()" class="text-[10px] font-bold text-gray-300 dark:text-gray-600 cursor-pointer select-none">Version 1.0.5 (Stable)</p>
+                <div id="admin-pass-vault" class="mt-2 hidden">
+                    <input type="password" id="adminSecretKey" placeholder="Enter Secret Code" class="w-full text-xs p-2 rounded-lg border text-center dark:bg-gray-900 outline-none" oninput="verifyAdminKey(this.value)">
+                </div>
+            </div>
         </div>
     </div>
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden z-50"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden z-50 backdrop-blur-sm"></div>
 
     <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-40">
         <div class="flex items-center gap-4">
             <button onclick="toggleSidebar()"><i class="fas fa-bars-staggered"></i></button>
-            <h1 class="font-bold tracking-tight">VISION SSC GS PRO</h1>
+            <h1 class="font-bold tracking-tight">SSC MASTER PRO</h1>
         </div>
         <button onclick="toggleLang()" id="langBtn" class="bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase">HI</button>
     </nav>
@@ -63,11 +90,11 @@
         <div id="home-view" class="space-y-6">
             <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-3xl text-white shadow-xl">
                 <h2 class="text-xl font-black mb-1" id="welcome-title">नमस्ते, तैयारी शुरू करें!</h2>
-                <p class="text-xs text-blue-100" id="welcome-sub">Vision Coaching Classes - Safalta Ki Nayi Udaan</p>
+                <p class="text-xs text-blue-100" id="welcome-sub">Your Gateway to Competitive Excellence</p>
             </div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 px-1" id="section-title">Exam Categories</h3>
             <div id="categories-grid" class="grid grid-cols-1 gap-4">
-                <div id="loading" class="text-center py-20 text-gray-400">Syncing Live Data...</div>
+                <div id="loading" class="text-center py-20 text-gray-400">Syncing Live Cloud Sheets...</div>
             </div>
         </div>
 
@@ -81,19 +108,19 @@
             <div class="card p-6 rounded-2xl shadow-xl">
                 <h2 id="art-title" class="text-xl font-bold text-blue-600 mb-4 border-b pb-2"></h2>
                 <div id="art-body" class="text-sm leading-relaxed whitespace-pre-wrap font-normal text-gray-700 dark:text-gray-300"></div>
-                <button onclick="backToChapters()" class="w-full bg-blue-600 text-white p-4 rounded-xl mt-8 font-bold">Back to Chapters</button>
+                <button onclick="backToChapters()" class="w-full bg-blue-600 text-white p-4 rounded-xl mt-8 font-bold shadow-md">Back to Chapters</button>
             </div>
         </div>
 
         <div id="quiz-view" class="hidden">
             <div class="flex justify-between items-center mb-2 px-2">
                 <span id="quiz-progress" class="text-xs font-bold opacity-50"></span>
-                <div id="timer-badge" class="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-full">
+                <div id="timer-badge" class="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-full hidden">
                     <i class="fas fa-clock"></i> <span id="timer-text">30s</span>
                 </div>
             </div>
             <div class="card p-6 rounded-3xl shadow-xl min-h-[350px] relative overflow-hidden">
-                <div id="visual-timer-bar" class="timer-line absolute top-0 left-0 h-1 bg-amber-500" style="width: 100%"></div>
+                <div id="visual-timer-bar" class="timer-line absolute top-0 left-0 h-1 bg-amber-500 hidden" style="width: 100%"></div>
                 <div id="quiz-content" class="mt-2"></div>
                 <div id="feedback-area" class="hidden"></div>
             </div>
@@ -105,7 +132,8 @@
 
         <div id="result-view" class="hidden text-center">
             <div class="card p-10 rounded-[40px] shadow-2xl">
-                <h2 class="text-gray-400 font-bold uppercase text-xs mb-2">Final Score</h2>
+                <h3 id="score-feedback-msg" class="text-sm font-black text-blue-600 mb-1 uppercase tracking-wide">Performance Status</h3>
+                <h2 class="text-gray-400 font-bold uppercase text-[10px] mb-2 tracking-wider">Final Correct Accuracy</h2>
                 <div id="final-score" class="text-6xl font-black text-blue-600 mb-6">0/0</div>
                 <div class="grid grid-cols-2 gap-4">
                     <button onclick="navigateHome()" class="bg-blue-600 text-white p-4 rounded-2xl font-bold">Restart</button>
@@ -151,7 +179,11 @@
         const API = 'https://opensheet.elk.sh/1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs/Sheet1';
         let db = [], curCat = '', activeData = [], userChoices = [], curIdx = 0, lang = 'HI', fs = 16;
         let timerInterval, timeLeft = 30;
-        let currentOpenArticleData = null; // Track dynamic reader updates
+        let currentOpenArticleData = null;
+        
+        // Admin Module State Switches
+        let adminTapCounter = 0;
+        let adminModeUnlocked = false;
 
         window.addEventListener('popstate', function (event) {
             if (event.state) {
@@ -192,7 +224,6 @@
             "Static GK": "विविध सामान्य ज्ञान (Static GK)"
         };
 
-        // UI Fixed: Category wise beautiful iconic maps to fill the white blank boxes
         function getCategoryIcon(cat) {
             const raw = cat.toLowerCase();
             if(raw.includes('history') || raw.includes('इतिहास')) return 'fa-monument text-amber-500';
@@ -207,12 +238,20 @@
             const container = document.getElementById('categories-grid'); container.innerHTML = '';
             
             document.getElementById('welcome-title').innerText = lang === 'HI' ? "नमस्ते, तैयारी शुरू करें!" : "Welcome, Start Learning!";
-            document.getElementById('welcome-sub').innerText = lang === 'HI' ? "Vision Coaching Classes - Safalta Ki Nayi Udaan" : "Vision Coaching Classes - Your Gateway to Competitive Excellence";
+            document.getElementById('welcome-sub').innerText = lang === 'HI' ? "SSC MASTER PRO - सफलता की नई उड़ान" : "SSC MASTER PRO - Gateway to Excellence";
             document.getElementById('section-title').innerText = lang === 'HI' ? "परीक्षा श्रेणियां" : "Exam Categories";
 
             const cats = [...new Set(db.map(i => i.Category).filter(Boolean))];
             cats.forEach(cat => {
                 const displayName = lang === 'HI' ? (categoryTranslation[cat] || cat) : cat;
+                
+                // Advanced Hidden Verification: Total audit count selector
+                let totalQuestionsStr = "";
+                if (adminModeUnlocked) {
+                    const totalCount = db.filter(i => i.Category === cat && i.Type === 'Quiz').length;
+                    totalQuestionsStr = `<span class="block text-[11px] font-black text-indigo-500 mt-0.5"><i class="fas fa-database text-[9px]"></i> Total Questions: ${totalCount}</span>`;
+                }
+
                 const div = document.createElement('div');
                 div.className = "card p-5 rounded-2xl flex items-center justify-between cursor-pointer hover:scale-[0.99] transition border-b-4 border-blue-600 shadow-sm";
                 div.innerHTML = `
@@ -220,7 +259,10 @@
                         <div class="w-11 h-11 bg-blue-50 dark:bg-gray-800 rounded-xl flex items-center justify-center">
                             <i class="fas ${getCategoryIcon(cat)} text-base"></i>
                         </div>
-                        <h3 class="font-extrabold text-sm tracking-tight">${displayName}</h3>
+                        <div>
+                            <h3 class="font-extrabold text-sm tracking-tight">${displayName}</h3>
+                            ${totalQuestionsStr}
+                        </div>
                     </div>
                     <i class="fas fa-chevron-right text-xs opacity-30 text-blue-600"></i>
                 `;
@@ -235,7 +277,6 @@
             document.getElementById('modal-read-btn').innerText = lang === 'HI' ? "📖 आर्टिकल पढ़ें" : "📖 Read Article";
             document.getElementById('modal-quiz-btn').innerText = lang === 'HI' ? "📝 क्विज शुरू करें" : "📝 Start Quiz";
             
-            // Text Configuration Translation UI
             document.getElementById('config-label').innerText = lang === 'HI' ? "प्रश्नों की संख्या चुनें:" : "Question Count Pattern:";
             const selectEl = document.getElementById('quizQuestionCount');
             selectEl.options[0].text = lang === 'HI' ? "SSC ऑफिशियल GS पैटर्न (25 Qs)" : "SSC Official GS Pattern (25 Qs)";
@@ -272,18 +313,21 @@
         }
 
         function openArticle(art) {
-            currentOpenArticleData = art; // Saved state globally
+            currentOpenArticleData = art; 
             changeState('article-view');
             showViewDirectly('article-view');
             updateArticleUI();
         }
 
-        // Bug Fixed: Interactive engine to refresh reader strings immediately when language button is tapped
         function updateArticleUI() {
             if (!currentOpenArticleData) return;
             const art = currentOpenArticleData;
             document.getElementById('art-title').innerText = lang === 'HI' ? art.Chapter : (art.Chapter_EN || art.Chapter);
-            document.getElementById('art-body').innerText = (lang==='HI' ? art.Explanation_HI : art.Explanation_EN || art.Explanation_HI);
+            
+            // Dynamic Typography Suite Integration
+            const artBodyNode = document.getElementById('art-body');
+            artBodyNode.style.fontSize = `${fs}px`;
+            artBodyNode.innerText = (lang==='HI' ? art.Explanation_HI : art.Explanation_EN || art.Explanation_HI);
         }
 
         function startQuiz() {
@@ -291,9 +335,7 @@
             changeState('quiz-view');
             showViewDirectly('quiz-view');
             
-            // Feature Added: Reading custom options from drop-down module selection
             const chosenCount = parseInt(document.getElementById('quizQuestionCount').value) || 10;
-            
             activeData = db.filter(i => i.Category === curCat && i.Type === 'Quiz').sort(()=>0.5-Math.random()).slice(0, chosenCount);
             userChoices = new Array(activeData.length).fill(null);
             curIdx = 0;
@@ -302,6 +344,11 @@
 
         function startTimer() {
             clearInterval(timerInterval);
+            if(!document.getElementById('timerToggle').checked) {
+                document.getElementById('timer-badge').classList.add('hidden');
+                document.getElementById('visual-timer-bar').classList.add('hidden');
+                return;
+            }
             timeLeft = 30;
             document.getElementById('visual-timer-bar').style.width = '100%';
             document.getElementById('timer-text').innerText = `${timeLeft}s`;
@@ -342,16 +389,22 @@
             
             if(!ans) {
                 startTimer();
-                document.getElementById('timer-badge').classList.remove('hidden');
-                document.getElementById('visual-timer-bar').classList.remove('hidden');
+                if(document.getElementById('timerToggle').checked) {
+                    document.getElementById('timer-badge').classList.remove('hidden');
+                    document.getElementById('visual-timer-bar').classList.remove('hidden');
+                }
             } else {
                 clearInterval(timerInterval);
                 document.getElementById('timer-badge').classList.add('hidden');
                 document.getElementById('visual-timer-bar').classList.add('hidden');
             }
 
+            // Live Feature Integration: Extracted dynamic year tags directly under heading string
+            const liveYearTagStr = q.Tag ? `<div class="mt-2 inline-flex items-center gap-1 bg-blue-50 dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider"><i class="fas fa-tag text-[9px]"></i> ${q.Tag}</div>` : '';
+
             document.getElementById('quiz-content').innerHTML = `
-                <h2 style="font-size:${fs}px" class="font-bold mb-6">${isHI ? q.Question_HI : q.Question_EN}</h2>
+                <div style="font-size:${fs}px" class="font-bold mb-1 leading-snug">${isHI ? q.Question_HI : q.Question_EN}</div>
+                <div class="mb-5">${liveYearTagStr}</div>
                 <div class="space-y-2">
                     ${opts.map(o => {
                         let cls = "";
@@ -366,7 +419,7 @@
             
             const fb = document.getElementById('feedback-area');
             if(ans) {
-                fb.innerHTML = `<div class="explanation-box"><b>Explanation:</b><br>${ans.exp}<br><span class="text-[10px] font-bold text-blue-500 mt-2 block">${ans.tag || ''}</span></div>`;
+                fb.innerHTML = `<div class="explanation-box"><b>Explanation:</b><br>${ans.exp}</div>`;
                 fb.classList.remove('hidden');
             } else fb.classList.add('hidden');
 
@@ -394,6 +447,24 @@
             showViewDirectly('result-view');
             const score = userChoices.filter(u => u?.isRight).length;
             document.getElementById('final-score').innerText = `${score}/${activeData.length}`;
+            
+            // Scorecard performance calculation engine
+            const accuracyRatio = (score / activeData.length) * 100;
+            const messageBox = document.getElementById('score-feedback-msg');
+            
+            if(accuracyRatio >= 90) {
+                messageBox.innerText = lang === 'HI' ? "अद्भुत! आपने कमाल कर दिया, बिल्कुल एग्जाम-रेडी! 🏆" : "OUTSTANDING! PERFECTLY EXAM READY! 🏆";
+                messageBox.className = "text-sm font-black text-emerald-500 mb-1 tracking-wide";
+            } else if(accuracyRatio >= 70) {
+                messageBox.innerText = lang === 'HI' ? "बहुत बढ़िया! आपकी तैयारी सही दिशा में है। ⭐" : "GREAT WORK! STABLE ACCURACY LEVEL. ⭐";
+                messageBox.className = "text-sm font-black text-blue-500 mb-1 tracking-wide";
+            } else if(accuracyRatio >= 41) {
+                messageBox.innerText = lang === 'HI' ? "अच्छा प्रयास है! थोड़ा और ध्यान दें तो स्कोर बेहतर होगा। 👍" : "GOOD EFFORT! NEED SLIGHT ADJUSTMENT. 👍";
+                messageBox.className = "text-sm font-black text-amber-500 mb-1 tracking-wide";
+            } else {
+                messageBox.innerText = lang === 'HI' ? "आपको और ज्यादा पढ़ने और मेहनत की जरूरत है! 📚" : "YOU NEED MORE STUDY PRACTICE DRILLS! 📚";
+                messageBox.className = "text-sm font-black text-red-500 mb-1 tracking-wide";
+            }
         }
 
         function toggleReview() {
@@ -413,7 +484,7 @@
             if(!document.getElementById('home-view').classList.contains('hidden')) renderHome();
             if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion();
             if(!document.getElementById('chapter-view').classList.contains('hidden')) openChapterList();
-            if(!document.getElementById('article-view').classList.contains('hidden')) updateArticleUI(); // Realtime sync update fix
+            if(!document.getElementById('article-view').classList.contains('hidden')) updateArticleUI();
         }
 
         function navigateHome() {
@@ -427,9 +498,54 @@
             openChapterList();
         }
 
+        // Standard Utility Node Triggers
+        function shareApplication() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'SSC MASTER PRO',
+                    text: 'Join SSC MASTER PRO by Vision Coaching Classes for elite preparation!',
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                alert("App Link Copied To Clipboard! Share with your students.");
+            }
+        }
+
+        function triggerAppUpdate() {
+            alert("Checking Cloud Repository... Aap pehle se hi latest aur stable version v1.0.5 par hain!");
+        }
+
+        // Invisible Admin Security Locks Engine
+        function registerAdminTap() {
+            if(adminModeUnlocked) return;
+            adminTapCounter++;
+            if(adminTapCounter >= 5) {
+                adminTapCounter = 0;
+                document.getElementById('admin-pass-vault').classList.remove('hidden');
+            }
+        }
+
+        function verifyAdminKey(val) {
+            // Invisible Validation Match
+            if(val === "admin786") {
+                adminModeUnlocked = true;
+                document.getElementById('admin-pass-vault').classList.add('hidden');
+                document.getElementById('adminSecretKey').value = "";
+                alert("Admin Access Unlocked! Total category count lists are now live.");
+                if(!document.getElementById('home-view').classList.contains('hidden')) renderHome();
+            }
+        }
+
+        // Stable Range Scope Typography Suite
+        function changeFontSize(v) { 
+            fs = parseInt(v); 
+            document.getElementById('fs-indicator').innerText = v + 'px';
+            if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); 
+            if(!document.getElementById('article-view').classList.contains('hidden')) updateArticleUI();
+        }
+
         function toggleDarkMode() { document.body.classList.toggle('dark'); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('overlay').classList.toggle('hidden'); }
-        function changeFontSize(v) { fs = v; if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); }
     </script>
 </body>
 </html>
