@@ -3,186 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSC GS MASTER PRO - STABLE PREMIUM VERSION</title>
+    <title>SSC GS MASTER PRO - TESTBOOK EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        premium: {
-                            bgLight: '#f8fafc',
-                            bgDark: '#090d16',
-                            cardLight: '#ffffff',
-                            cardDark: '#111827',
-                            brand: '#3b82f6',
-                            accent: '#10b981'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { transition: background-color 0.3s, color 0.3s; font-family: system-ui, -apple-system, sans-serif; }
-        .premium-shadow { box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
-        .dark .premium-shadow { box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
-        .option-btn { width: 100%; text-align: left; padding: 16px; margin: 10px 0; border-radius: 16px; border: 2px solid #e2e8f0; background: transparent; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-weight: 500; display: flex; align-items: center; justify-content: space-between; }
+        :root { --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --primary: #2563eb; }
+        .dark { --bg: #090d16; --card: #111827; --text: #f8fafc; --primary: #3b82f6; }
+        body { background-color: var(--bg); color: var(--text); transition: 0.3s ease; font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        .card { background-color: var(--card); border: 1px solid rgba(0,0,0,0.05); }
+        .sidebar { transition: 0.3s transform; z-index: 1000; }
+        .option-btn { width: 100%; text-align: left; padding: 15px; margin: 8px 0; border-radius: 12px; border: 2px solid #e2e8f0; background: var(--card); transition: 0.2s; font-weight: 500; }
         .dark .option-btn { border-color: #1f2937; }
-        .option-btn:hover:not([disabled]) { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); transform: translateY(-1px); }
-        .dark .option-btn:hover:not([disabled]) { background: rgba(59, 130, 246, 0.1); }
-        .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #14532d; font-weight: 600; }
-        .dark .correct { background: rgba(34, 197, 94, 0.15) !important; color: #4ade80; border-color: #22c55e !important; }
-        .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d; font-weight: 600; }
-        .dark .wrong { background: rgba(239, 68, 68, 0.15) !important; color: #f87171; border-color: #ef4444 !important; }
-        .explanation-box { background: rgba(59, 130, 246, 0.05); border-left: 4px solid #3b82f6; padding: 16px; margin-top: 16px; border-radius: 12px; font-size: 14.5px; animation: slideUp 0.3s ease-out; }
-        .dark .explanation-box { background: rgba(59, 130, 246, 0.1); color: #cbd5e1; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
+        .dark .correct { background: rgba(34, 197, 94, 0.15) !important; color: #4ade80; }
+        .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
+        .dark .wrong { background: rgba(239, 68, 68, 0.15) !important; color: #f87171; }
+        .explanation-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; margin-top: 15px; border-radius: 10px; font-size: 14px; animation: slideIn 0.3s ease; }
+        .dark .explanation-box { background: #1e293b; color: #cbd5e1; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .timer-line { transition: width 1s linear; }
     </style>
 </head>
-<body class="light bg-[#f8fafc] text-[#0f172a] dark:bg-[#090d16] dark:text-[#f8fafc] min-h-screen flex flex-col">
+<body class="light">
 
     <audio id="sound-correct" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
     <audio id="sound-wrong" src="https://assets.mixkit.co/active_storage/sfx/2105/2105-preview.mp3"></audio>
 
-    <!-- Sleek Modern Sidebar -->
-    <div id="sidebar" class="fixed top-0 left-0 w-80 h-full bg-white dark:bg-[#111827] shadow-2xl transition-transform duration-300 transform -translate-x-full z-[1000] border-r border-gray-100 dark:border-gray-800">
-        <div class="p-6 flex flex-col justify-between h-full">
-            <div>
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-xl font-black text-blue-600 dark:text-blue-500 tracking-wider uppercase">App Configuration</h2>
-                    <button onclick="toggleSidebar()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+    <!-- Sidebar Configuration -->
+    <div id="sidebar" class="sidebar fixed top-0 left-0 w-72 h-full card shadow-2xl -translate-x-full">
+        <div class="p-6 h-full flex flex-col justify-between">
+            <div class="space-y-6">
+                <h2 class="text-xl font-black text-blue-600 tracking-tighter uppercase">SETTINGS</h2>
+                <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
+                    <span>Dark Mode</span> <i id="theme-icon" class="fas fa-moon"></i>
+                </button>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
+                    <span>Sounds</span>
+                    <input type="checkbox" id="soundToggle" checked>
                 </div>
-                <div class="space-y-4">
-                    <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:opacity-90 transition">
-                        <span class="font-medium text-sm">Theme Mode</span> <i id="theme-icon" class="fas fa-moon text-blue-500"></i>
-                    </button>
-                    <div class="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50">
-                        <span class="font-medium text-sm">Haptic Sounds</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="soundToggle" checked class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:bg-gray-700 peer-checked:bg-blue-600"></div>
-                        </label>
-                    </div>
-                    <div class="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50">
-                        <div class="flex justify-between text-xs font-bold text-gray-400 mb-2 uppercase">
-                            <span>Font Size</span> <span id="fs-display">16px</span>
-                        </div>
-                        <input type="range" min="14" max="24" value="16" oninput="changeFontSize(this.value)" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600">
-                    </div>
+                <div>
+                    <p class="text-[10px] font-bold text-gray-400 mb-2">Font Size</p>
+                    <input type="range" min="14" max="24" value="16" oninput="changeFontSize(this.value)" class="w-full">
                 </div>
             </div>
-            <button onclick="location.reload()" class="w-full flex items-center justify-center gap-2 p-4 rounded-2xl font-bold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:opacity-90 transition">
-                <i class="fas fa-house-chimney"></i> Reset Workspace
-            </button>
+            <button onclick="navigateHome()" class="w-full text-center p-3 font-bold text-blue-600 bg-blue-50 dark:bg-gray-800 rounded-xl"><i class="fas fa-home"></i> Home Screen</button>
         </div>
     </div>
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-[950]"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden z-50"></div>
 
-    <!-- Transparent Premium Navigation Header -->
-    <nav class="bg-white/80 dark:bg-[#111827]/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 p-4 sticky top-0 z-40 flex justify-between items-center premium-shadow">
+    <!-- Navigation Header -->
+    <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-40">
         <div class="flex items-center gap-4">
-            <button onclick="toggleSidebar()" class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:scale-95 transition">
-                <i class="fas fa-bars-staggered"></i>
-            </button>
-            <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">SSC GS MASTER PRO</h1>
+            <button onclick="toggleSidebar()"><i class="fas fa-bars-staggered"></i></button>
+            <h1 class="font-bold tracking-tight">SSC MASTER PRO</h1>
         </div>
-        <button onclick="toggleLang()" id="langBtn" class="bg-gradient-to-r from-blue-600 to-indigo-500 text-white px-5 py-1.5 rounded-full text-xs font-black tracking-wider uppercase shadow-md active:scale-95 transition">HI</button>
+        <button onclick="toggleLang()" id="langBtn" class="bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase">HI</button>
     </nav>
 
-    <!-- Main Content Grid -->
-    <div id="main-app" class="max-w-xl mx-auto w-full p-4 flex-1 flex flex-col justify-start">
+    <!-- Main Workspace -->
+    <div id="main-app" class="max-w-xl mx-auto p-4">
         
-        <!-- Smart Database Syncer -->
-        <div id="loading" class="text-center py-32 flex flex-col items-center justify-center gap-3">
-            <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-xs font-bold uppercase tracking-widest text-gray-400">Syncing Cloud Sheets...</p>
+        <!-- Welcome Banner & Premium Option A Home View -->
+        <div id="home-view" class="space-y-6">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-3xl text-white shadow-xl">
+                <h2 class="text-xl font-black mb-1" id="welcome-title">नमस्ते, तैयारी शुरू करें!</h2>
+                <p class="text-xs text-blue-100" id="welcome-sub">Testbook pattern par aadharit live test series</p>
+            </div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 px-1" id="section-title">Exam Categories</h3>
+            <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div id="loading" class="col-span-full text-center py-20 text-gray-400">Syncing Live Data...</div>
+            </div>
         </div>
 
-        <!-- Premium Grid Category Dashboard -->
-        <div id="home-view" class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden"></div>
-
-        <!-- Chapter Pipeline -->
+        <!-- Modern Chapter Lists View -->
         <div id="chapter-view" class="hidden">
-            <h2 id="chap-title" class="text-xl font-black mb-5 text-blue-600 dark:text-blue-400 border-b border-gray-100 dark:border-gray-800 pb-2"></h2>
+            <h2 id="chap-title" class="text-lg font-bold mb-4 text-blue-600 border-b pb-2">Chapters</h2>
             <div id="chapter-list" class="space-y-3"></div>
-            <button onclick="location.reload()" class="w-full mt-6 p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm font-bold tracking-wide transition">← Back to Console</button>
+            <button onclick="navigateHome()" class="w-full mt-6 text-gray-400 font-bold text-sm">← Back to Dashboard</button>
         </div>
 
-        <!-- Reader Workspace -->
+        <!-- Premium Article Reader Mode -->
         <div id="article-view" class="hidden">
-            <div class="bg-white dark:bg-[#111827] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 premium-shadow">
-                <h2 id="art-title" class="text-xl font-extrabold text-blue-600 dark:text-blue-400 mb-4 border-b border-gray-100 dark:border-gray-800 pb-2"></h2>
-                <div id="art-body" class="text-base leading-relaxed text-gray-600 dark:text-gray-300 whitespace-pre-wrap font-normal"></div>
-                <button onclick="closeArticle()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-500 text-white p-4 rounded-xl mt-8 font-bold shadow-lg shadow-blue-500/10 active:scale-95 transition">Exit Reader</button>
+            <div class="card p-6 rounded-2xl shadow-xl">
+                <h2 id="art-title" class="text-xl font-bold text-blue-600 mb-4 border-b pb-2"></h2>
+                <div id="art-body" class="text-sm leading-relaxed whitespace-pre-wrap font-normal"></div>
+                <button onclick="backToChapters()" class="w-full bg-blue-600 text-white p-4 rounded-xl mt-8 font-bold">Back to Chapters</button>
             </div>
         </div>
 
-        <!-- Live Immersive Quiz Arena -->
-        <div id="quiz-view" class="hidden flex-1 flex flex-col">
-            <div class="flex justify-between items-center mb-3 px-1">
-                <span id="quiz-progress" class="text-xs font-black tracking-wider uppercase text-blue-600 dark:text-blue-400"></span>
-                <!-- Advance Feature Badge: Timer Alert -->
-                <div id="timer-box" class="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-full">
-                    <i class="fas fa-stopwatch animate-pulse"></i> <span id="timer-text">30s</span>
+        <!-- Immersive Quiz Platform -->
+        <div id="quiz-view" class="hidden">
+            <div class="flex justify-between items-center mb-2 px-2">
+                <span id="quiz-progress" class="text-xs font-bold opacity-50"></span>
+                <!-- Advance Feature: Timer Badge -->
+                <div id="timer-badge" class="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-full">
+                    <i class="fas fa-clock"></i> <span id="timer-text">30s</span>
                 </div>
             </div>
-
-            <!-- Linear Top Progress Bar -->
-            <div class="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full mb-6 overflow-hidden">
-                <div id="linear-progress-bar" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500" style="width: 0%"></div>
+            <div class="card p-6 rounded-3xl shadow-xl min-h-[350px] relative overflow-hidden">
+                <div id="visual-timer-bar" class="timer-line absolute top-0 left-0 h-1 bg-amber-500" style="width: 100%"></div>
+                <div id="quiz-content" class="mt-2"></div>
+                <div id="feedback-area" class="hidden"></div>
             </div>
-
-            <div class="bg-white dark:bg-[#111827] p-6 rounded-[32px] border border-gray-100 dark:border-gray-800 premium-shadow flex-1 flex flex-col justify-between relative overflow-hidden min-h-[360px]">
-                <!-- Smart Visual Horizontal Countdown Line -->
-                <div id="horizontal-timer-line" class="timer-line absolute top-0 left-0 h-1 bg-gradient-to-r from-amber-400 to-orange-500" style="width: 100%"></div>
-                
-                <div id="quiz-content" class="w-full"></div>
-                <div id="feedback-area" class="w-full hidden"></div>
-            </div>
-            
             <div class="flex gap-4 mt-6">
-                <button id="prevBtn" onclick="prevQ()" class="flex-1 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl font-bold text-sm transition">Previous</button>
-                <button id="nextBtn" onclick="nextQ()" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-500 text-white p-4 rounded-xl font-bold text-sm shadow-md transition">Next Segment</button>
+                <button id="prevBtn" onclick="prevQ()" class="flex-1 bg-gray-200 dark:bg-gray-800 p-4 rounded-xl font-bold opacity-30" disabled>Prev</button>
+                <button id="nextBtn" onclick="nextQ()" class="flex-1 bg-blue-600 text-white p-4 rounded-xl font-bold">Next</button>
             </div>
         </div>
 
-        <!-- Advanced Performance Analytical Report -->
+        <!-- Detailed Result Screen -->
         <div id="result-view" class="hidden text-center">
-            <div class="bg-white dark:bg-[#111827] p-8 rounded-[40px] border border-gray-100 dark:border-gray-800 premium-shadow">
-                <div class="w-16 h-16 bg-blue-50 dark:bg-blue-950/40 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-award text-2xl text-amber-500"></i>
-                </div>
-                <h3 id="appreciation-status" class="text-base font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">Session Concluded</h3>
-                <h2 class="text-gray-400 font-bold uppercase text-[10px] tracking-wider mb-2">Final Correct Accuracy</h2>
-                <div id="final-score" class="text-6xl font-black bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent mb-8">0/0</div>
+            <div class="card p-10 rounded-[40px] shadow-2xl">
+                <h2 class="text-gray-400 font-bold uppercase text-xs mb-2">Final Score</h2>
+                <div id="final-score" class="text-6xl font-black text-blue-600 mb-6">0/0</div>
                 <div class="grid grid-cols-2 gap-4">
-                    <button onclick="location.reload()" class="bg-gradient-to-r from-blue-600 to-indigo-500 text-white p-4 rounded-xl font-bold text-sm shadow-sm transition">Re-run Quiz</button>
-                    <button onclick="toggleReview()" class="bg-gray-900 dark:bg-gray-800 text-white p-4 rounded-xl font-bold text-sm transition">Review Script</button>
+                    <button onclick="navigateHome()" class="bg-blue-600 text-white p-4 rounded-2xl font-bold">Restart</button>
+                    <button onclick="toggleReview()" class="bg-gray-800 text-white p-4 rounded-2xl font-bold text-sm">Review Ans</button>
                 </div>
             </div>
             <div id="review-area" class="hidden mt-6 space-y-4 text-left pb-20"></div>
         </div>
     </div>
 
-    <!-- Immersive Dashboard Node Selection Modal -->
-    <div id="selection-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[100] backdrop-blur-sm">
-        <div class="bg-white dark:bg-[#111827] w-full max-w-sm rounded-[32px] p-6 shadow-2xl text-center relative border border-gray-50 dark:border-gray-800/80 animate-slide-up">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
-            <div class="w-14 h-14 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
-                <i class="fas fa-compass text-xl"></i>
+    <!-- Mode Selection Modal -->
+    <div id="selection-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-[100] backdrop-blur-sm">
+        <div class="card w-full max-w-sm rounded-[32px] p-8 shadow-2xl text-center relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400"><i class="fas fa-times"></i></button>
+            <div class="w-14 h-14 bg-blue-50 text-blue-600 dark:bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-layer-group text-xl"></i>
             </div>
-            <h3 id="modal-cat-name" class="text-lg font-black tracking-tight mb-1">Category</h3>
-            <p class="text-gray-400 text-xs font-medium mb-6">Choose your workspace preference</p>
+            <h3 id="modal-cat-name" class="text-xl font-bold mb-1">Category</h3>
+            <p class="text-gray-400 text-xs mb-6">Choose your learning mode</p>
             <div class="grid gap-3">
-                <button onclick="openChapterList()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-2xl font-bold flex justify-between items-center px-5 shadow-sm">
-                    <span class="flex items-center gap-3 text-sm"><i class="fas fa-book-bookmark"></i> Read Study File</span> <i class="fas fa-chevron-right text-[10px] opacity-50"></i>
+                <button onclick="openChapterList()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold flex justify-between items-center px-5">
+                    <span id="modal-read-btn">📖 Read Article</span> <i class="fas fa-chevron-right text-[10px]"></i>
                 </button>
-                <button onclick="startQuiz()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 rounded-2xl font-bold flex justify-between items-center px-5 shadow-sm">
-                    <span class="flex items-center gap-3 text-sm"><i class="fas fa-circle-question"></i> Launch Smart Quiz</span> <i class="fas fa-chevron-right text-[10px] opacity-50"></i>
+                <button onclick="startQuiz()" class="w-full bg-emerald-600 text-white p-4 rounded-2xl font-bold flex justify-between items-center px-5">
+                    <span id="modal-quiz-btn"> 📝 Start Quiz</span> <i class="fas fa-chevron-right text-[10px]"></i>
                 </button>
             </div>
         </div>
@@ -191,42 +148,68 @@
     <script>
         const API = 'https://opensheet.elk.sh/1uDHzIhALnR2zmrK13PXyBeFd9KRcUgkOY4kwu_lYqRs/Sheet1';
         let db = [], curCat = '', activeData = [], userChoices = [], curIdx = 0, lang = 'HI', fs = 16;
-        
-        // Advanced Horizontal Tracker Properties
-        let trackingClock;
-        let timeBudget = 30;
+        let timerInterval, timeLeft = 30;
+
+        // 🛠️ CRITICAL FIX: System Navigation History Engine
+        window.addEventListener('popstate', function (event) {
+            if (event.state) {
+                const targetView = event.state.view;
+                showViewDirectly(targetView);
+            } else {
+                showViewDirectly('home-view');
+            }
+        });
+
+        function changeState(viewName) {
+            history.pushState({ view: viewName }, '', '');
+        }
+
+        function showViewDirectly(viewId) {
+            clearInterval(timerInterval);
+            ['home-view', 'chapter-view', 'article-view', 'quiz-view', 'result-view'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+        }
 
         fetch(API).then(r => r.json()).then(data => {
             db = data;
             document.getElementById('loading').classList.add('hidden');
-            document.getElementById('home-view').classList.remove('hidden');
             renderHome();
         });
 
-        // Smart Adaptive Decorative Icon Engine
-        function identifyIconStructure(categoryText) {
-            const raw = categoryText.toLowerCase();
-            if(raw.includes('history') || raw.includes('इतिहास')) return 'fa-monument text-amber-500';
-            if(raw.includes('geo') || raw.includes('भूगोल')) return 'fa-earth-americas text-emerald-500';
-            if(raw.includes('polity') || raw.includes('संविधान')) return 'fa-gavel text-indigo-500';
-            if(raw.includes('science') || raw.includes('विज्ञान')) return 'fa-microscope text-purple-500';
-            return 'fa-box-archive text-blue-500';
-        }
+        // Mapping English Categories to Hindi Translations Dynamically
+        const categoryTranslation = {
+            "History": "इतिहास (History)",
+            "Geography": "भूगोल (Geography)",
+            "Polity": "भारतीय संविधान (Polity)",
+            "Science": "सामान्य विज्ञान (Science)",
+            "Economics": "अर्थशास्त्र (Economics)",
+            "Static GK": "विविध सामान्य ज्ञान (Static GK)"
+        };
 
         function renderHome() {
-            const container = document.getElementById('home-view'); container.innerHTML = '';
+            const container = document.getElementById('categories-grid'); container.innerHTML = '';
+            
+            // Translations for Welcome Panel
+            document.getElementById('welcome-title').innerText = lang === 'HI' ? "नमस्ते, तैयारी शुरू करें!" : "Welcome, Start Learning!";
+            document.getElementById('welcome-sub').innerText = lang === 'HI' ? "टेस्टबुक पैटर्न पर आधारित लाइव टेस्ट सीरीज" : "Live test series based on Testbook pattern";
+            document.getElementById('section-title').innerText = lang === 'HI' ? "परीक्षा श्रेणियां" : "Exam Categories";
+
             const cats = [...new Set(db.map(i => i.Category).filter(Boolean))];
             cats.forEach(cat => {
+                const displayName = lang === 'HI' ? (categoryTranslation[cat] || cat) : cat;
                 const div = document.createElement('div');
-                div.className = "bg-white dark:bg-[#111827] p-5 rounded-2xl flex items-center justify-between cursor-pointer border border-gray-100 dark:border-gray-800/80 hover:scale-[0.98] transition premium-shadow";
+                // Option A Layout: Grid profile blocks with beautiful alignment
+                div.className = "card p-5 rounded-2xl flex items-center justify-between cursor-pointer hover:scale-[0.99] transition border-b-4 border-blue-600 shadow-sm";
                 div.innerHTML = `
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-800/40 flex items-center justify-center">
-                            <i class="fas ${identifyIconStructure(cat)} text-lg"></i>
+                        <div class="w-10 h-10 bg-blue-50 dark:bg-gray-800 rounded-xl flex items-center justify-center text-blue-600">
+                            <i class="fas fa-book-bookmark"></i>
                         </div>
-                        <h3 class="font-extrabold text-sm tracking-tight text-left">${cat}</h3>
+                        <h3 class="font-extrabold text-sm tracking-tight">${displayName}</h3>
                     </div>
-                    <i class="fas fa-chevron-right text-xs opacity-20 text-blue-500"></i>
+                    <i class="fas fa-chevron-right text-xs opacity-30 text-blue-600"></i>
                 `;
                 div.onclick = () => { curCat = cat; openSelectionModal(); };
                 container.appendChild(div);
@@ -234,7 +217,10 @@
         }
 
         function openSelectionModal() {
-            document.getElementById('modal-cat-name').innerText = curCat;
+            const modalCatDisplay = lang === 'HI' ? (categoryTranslation[curCat] || curCat) : curCat;
+            document.getElementById('modal-cat-name').innerText = modalCatDisplay;
+            document.getElementById('modal-read-btn').innerText = lang === 'HI' ? "📖 आर्टिकल पढ़ें" : "📖 Read Article";
+            document.getElementById('modal-quiz-btn').innerText = lang === 'HI' ? "📝 क्विज शुरू करें" : "📝 Start Quiz";
             document.getElementById('selection-modal').classList.remove('hidden');
         }
 
@@ -242,72 +228,70 @@
 
         function openChapterList() {
             closeModal();
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('chapter-view').classList.remove('hidden');
-            document.getElementById('chap-title').innerText = curCat;
+            changeState('chapter-view');
+            showViewDirectly('chapter-view');
+            
+            const modalCatDisplay = lang === 'HI' ? (categoryTranslation[curCat] || curCat) : curCat;
+            document.getElementById('chap-title').innerText = modalCatDisplay;
+            
             const list = document.getElementById('chapter-list'); list.innerHTML = '';
             const arts = db.filter(i => i.Category === curCat && i.Type === 'Article').sort((a,b)=>a.Order-b.Order);
+            
             arts.forEach(art => {
+                // Feature Fixed: Chapter names now change according to selected language language toggle
+                const chapterTitle = lang === 'HI' ? art.Chapter : (art.Chapter_EN || art.Chapter);
                 const d = document.createElement('div');
-                d.className = "bg-white dark:bg-[#111827] p-4 rounded-xl flex justify-between items-center font-bold text-sm border-l-4 border-blue-500 premium-shadow cursor-pointer";
-                d.innerHTML = `<span>${art.Order}. ${art.Chapter}</span> <i class="fas fa-circle-arrow-right text-xs text-blue-500 opacity-50"></i>`;
+                d.className = "card p-4 rounded-xl flex justify-between items-center font-bold text-sm border-l-4 border-amber-500 shadow-sm cursor-pointer";
+                d.innerHTML = `<span>${art.Order}. ${chapterTitle}</span> <i class="fas fa-chevron-right text-[10px] opacity-30"></i>`;
                 d.onclick = () => openArticle(art);
                 list.appendChild(d);
             });
         }
 
         function openArticle(art) {
-            document.getElementById('chapter-view').classList.add('hidden');
-            document.getElementById('article-view').classList.remove('hidden');
-            document.getElementById('art-title').innerText = art.Chapter;
+            changeState('article-view');
+            showViewDirectly('article-view');
+            document.getElementById('art-title').innerText = lang === 'HI' ? art.Chapter : (art.Chapter_EN || art.Chapter);
             document.getElementById('art-body').innerText = (lang==='HI' ? art.Explanation_HI : art.Explanation_EN || art.Explanation_HI);
         }
 
         function startQuiz() {
             closeModal();
+            changeState('quiz-view');
+            showViewDirectly('quiz-view');
             activeData = db.filter(i => i.Category === curCat && i.Type === 'Quiz').sort(()=>0.5-Math.random()).slice(0, 10);
             userChoices = new Array(activeData.length).fill(null);
             curIdx = 0;
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('quiz-view').classList.remove('hidden');
             renderQuestion();
         }
 
-        // Advanced Feature Engine: Horizontal Interval Routine
-        function initiateHorizontalCountdown() {
-            clearInterval(trackingClock);
-            timeBudget = 30;
-            document.getElementById('timer-box').className = "flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-full";
-            document.getElementById('timer-text').innerText = `${timeBudget}s`;
-            document.getElementById('horizontal-timer-line').style.width = '100%';
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 30;
+            document.getElementById('visual-timer-bar').style.width = '100%';
+            document.getElementById('timer-text').innerText = `${timeLeft}s`;
             
-            trackingClock = setInterval(() => {
-                timeBudget--;
-                document.getElementById('timer-text').innerText = `${timeBudget}s`;
-                document.getElementById('horizontal-timer-line').style.width = `${(timeBudget / 30) * 100}%`;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-text').innerText = `${timeLeft}s`;
+                document.getElementById('visual-timer-bar').style.width = `${(timeLeft / 30) * 100}%`;
                 
-                if (timeBudget <= 10) {
-                    document.getElementById('timer-box').className = "flex items-center gap-1.5 px-3 py-1 bg-red-500/10 border border-red-500/20 text-red-500 dark:text-red-400 text-xs font-bold rounded-full";
-                }
-                
-                if (timeBudget <= 0) {
-                    clearInterval(trackingClock);
-                    triggerTimeoutSystem();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmitWrong();
                 }
             }, 1000);
         }
 
-        function triggerTimeoutSystem() {
+        function autoSubmitWrong() {
             if(userChoices[curIdx]) return;
             const q = activeData[curIdx];
             const isHI = lang === 'HI';
             const cor = isHI ? q.Correct_HI : q.Correct_EN || q.Correct_HI;
-            const exp = isHI ? q.Explanation_HI : q.Explanation_EN;
-            
-            userChoices[curIdx] = { sel: 'TIMEOUT_FLAG_EXPIRED', cor, exp, tag: q.Tag, isRight: false };
+            userChoices[curIdx] = { sel: 'TIMEOUT_EXPIRED', cor, exp: isHI ? q.Explanation_HI : q.Explanation_EN, tag: q.Tag, isRight: false };
             if(document.getElementById('soundToggle').checked) {
-                const s = document.getElementById('sound-wrong');
-                s.currentTime = 0; s.play();
+                document.getElementById('sound-wrong').currentTime = 0;
+                document.getElementById('sound-wrong').play();
             }
             renderQuestion();
         }
@@ -319,44 +303,35 @@
             const opts = isHI ? [q.Opt1_HI, q.Opt2_HI, q.Opt3_HI, q.Opt4_HI] : [q.Opt1_EN, q.Opt2_EN, q.Opt3_EN, q.Opt4_EN];
             const ans = userChoices[curIdx];
 
-            // Linear Progress Management
-            document.getElementById('quiz-progress').innerText = `Question ${curIdx+1}/${activeData.length}`;
-            document.getElementById('linear-progress-bar').style.width = `${((curIdx + 1) / activeData.length) * 100}%`;
-
-            // State Evaluation for Time Mechanics
-            if (!ans) {
-                initiateHorizontalCountdown();
-                document.getElementById('timer-box').classList.remove('hidden');
-                document.getElementById('horizontal-timer-line').classList.remove('hidden');
+            document.getElementById('quiz-progress').innerText = isHI ? `प्रश्न ${curIdx+1}/${activeData.length}` : `Question ${curIdx+1}/${activeData.length}`;
+            
+            if(!ans) {
+                startTimer();
+                document.getElementById('timer-badge').classList.remove('hidden');
+                document.getElementById('visual-timer-bar').classList.remove('hidden');
             } else {
-                clearInterval(trackingClock);
-                document.getElementById('timer-box').classList.add('hidden');
-                document.getElementById('horizontal-timer-line').classList.add('hidden');
+                clearInterval(timerInterval);
+                document.getElementById('timer-badge').classList.add('hidden');
+                document.getElementById('visual-timer-bar').classList.add('hidden');
             }
 
             document.getElementById('quiz-content').innerHTML = `
-                <h2 style="font-size:${fs}px" class="font-extrabold mb-6 leading-snug">${isHI ? q.Question_HI : q.Question_EN}</h2>
-                <div class="space-y-1">
+                <h2 style="font-size:${fs}px" class="font-bold mb-6">${isHI ? q.Question_HI : q.Question_EN}</h2>
+                <div class="space-y-2">
                     ${opts.map(o => {
                         let cls = "";
-                        let mark = "";
                         if(ans) {
-                            if(o === cor) { cls = "correct"; mark = '<i class="fas fa-check-circle text-emerald-500"></i>'; }
-                            else if(o === ans.sel) { cls = "wrong"; mark = '<i class="fas fa-times-circle text-red-500"></i>'; }
+                            if(o === cor) cls = "correct";
+                            else if(o === ans.sel) cls = "wrong";
                         }
-                        return `<button class="option-btn ${cls}" ${ans ? 'disabled' : ''} onclick="check('${o.replace(/'/g, "\\'")}', '${cor.replace(/'/g, "\\'")}', '${(isHI?q.Explanation_HI:q.Explanation_EN).replace(/'/g, "\\'")}', '${q.Tag}')">
-                            <span>${o}</span> <span>${mark}</span>
-                        </button>`;
+                        return `<button class="option-btn ${cls}" onclick="check('${o.replace(/'/g, "\\'")}', '${cor.replace(/'/g, "\\'")}', '${(isHI?q.Explanation_HI:q.Explanation_EN).replace(/'/g, "\\'")}', '${q.Tag}')">${o}</button>`;
                     }).join('')}
                 </div>
             `;
             
             const fb = document.getElementById('feedback-area');
             if(ans) {
-                if(ans.sel === 'TIMEOUT_FLAG_EXPIRED') {
-                    document.getElementById('quiz-content').insertAdjacentHTML('afterbegin', `<div class="mb-3 text-xs font-black text-red-500 uppercase tracking-widest"><i class="fas fa-hourglass-end"></i> Dynamic Timeout!</div>`);
-                }
-                fb.innerHTML = `<div class="explanation-box"><b>Strategic Insight:</b><br>${ans.exp}<br><span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 mt-2 block uppercase tracking-wider">${ans.tag || ''}</span></div>`;
+                fb.innerHTML = `<div class="explanation-box"><b>Explanation:</b><br>${ans.exp}<br><span class="text-[10px] font-bold text-blue-500 mt-2 block">${ans.tag || ''}</span></div>`;
                 fb.classList.remove('hidden');
             } else fb.classList.add('hidden');
 
@@ -366,7 +341,7 @@
 
         function check(sel, cor, exp, tag) {
             if(userChoices[curIdx]) return;
-            clearInterval(trackingClock);
+            clearInterval(timerInterval);
             const right = (sel === cor);
             userChoices[curIdx] = { sel, cor, exp, tag, isRight: right };
             if(document.getElementById('soundToggle').checked) {
@@ -380,25 +355,18 @@
         function prevQ() { if(curIdx > 0) { curIdx--; renderQuestion(); } }
 
         function finish() {
-            clearInterval(trackingClock);
-            document.getElementById('quiz-view').classList.add('hidden');
-            document.getElementById('result-view').classList.remove('hidden');
+            changeState('result-view');
+            showViewDirectly('result-view');
             const score = userChoices.filter(u => u?.isRight).length;
             document.getElementById('final-score').innerText = `${score}/${activeData.length}`;
-            
-            // Interactive Analytical Assessment Script
-            const statusNode = document.getElementById('appreciation-status');
-            if(score >= 8) statusNode.innerText = "OUTSTANDING MARKS! 🏆";
-            else if(score >= 5) statusNode.innerText = "SATELLITE GAIN! 👍";
-            else statusNode.innerText = "NEED DRILL PRACTICE! 📚";
         }
 
         function toggleReview() {
             const area = document.getElementById('review-area'); area.classList.toggle('hidden');
             area.innerHTML = userChoices.map((u, i) => `
-                <div class="bg-white dark:bg-[#111827] p-5 rounded-2xl border-l-4 ${u?.isRight ? 'border-emerald-500' : 'border-red-500'} premium-shadow">
-                    <p class="font-extrabold text-sm">${lang==='HI' ? activeData[i].Question_HI : activeData[i].Question_EN}</p>
-                    <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1"><i class="fas fa-circle-check"></i> Standard Key: ${u?.cor}</p>
+                <div class="card p-4 rounded-xl border-l-4 ${u?.isRight ? 'border-green-500' : 'border-red-500'}">
+                    <p class="font-bold text-sm">${lang==='HI' ? activeData[i].Question_HI : activeData[i].Question_EN}</p>
+                    <p class="text-xs text-green-600 mt-1">Ans: ${u?.cor}</p>
                 </div>
             `).join('');
         }
@@ -406,40 +374,27 @@
         function toggleLang() { 
             lang = (lang === 'HI' ? 'EN' : 'HI'); 
             document.getElementById('langBtn').innerText = lang;
+            
+            // Re-render components based on current view stack state
+            if(!document.getElementById('home-view').classList.contains('hidden')) renderHome();
             if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion();
-            if(!document.getElementById('article-view').classList.contains('hidden')) {
-                const title = document.getElementById('art-title').innerText;
-                const art = db.find(i => i.Chapter === title);
-                if(art) openArticle(art);
-            }
+            if(!document.getElementById('chapter-view').classList.contains('hidden')) openChapterList();
         }
 
-        function toggleDarkMode() { 
-            document.documentElement.classList.toggle('dark');
-            document.body.classList.toggle('dark');
-            const icon = document.getElementById('theme-icon');
-            if(document.body.classList.contains('dark')) {
-                icon.className = "fas fa-sun text-amber-400";
-            } else {
-                icon.className = "fas fa-moon text-blue-500";
-            }
+        function navigateHome() {
+            clearInterval(timerInterval);
+            showViewDirectly('home-view');
+            renderHome();
         }
-        
-        function toggleSidebar() { 
-            document.getElementById('sidebar').classList.toggle('-translate-x-full'); 
-            document.getElementById('overlay').classList.toggle('hidden'); 
+
+        function backToChapters() {
+            showViewDirectly('chapter-view');
+            openChapterList();
         }
-        
-        function changeFontSize(v) { 
-            fs = v; 
-            document.getElementById('fs-display').innerText = v + 'px';
-            if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); 
-        }
-        
-        function closeArticle() { 
-            document.getElementById('article-view').classList.add('hidden'); 
-            document.getElementById('chapter-view').classList.remove('hidden'); 
-        }
+
+        function toggleDarkMode() { document.body.classList.toggle('dark'); }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('overlay').classList.toggle('hidden'); }
+        function changeFontSize(v) { fs = v; if(!document.getElementById('quiz-view').classList.contains('hidden')) renderQuestion(); }
     </script>
 </body>
 </html>
